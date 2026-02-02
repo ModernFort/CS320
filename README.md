@@ -2,7 +2,7 @@
 
 ## Authors
 
-Karl Miller, Derek Takahata, Jonah Chamblee
+Karl Miller, Derek Takahata, Jonah Chamblee, Guyan Seifert
 
 ## Description
 
