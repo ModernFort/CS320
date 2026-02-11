@@ -6,7 +6,7 @@
 int main(int argc, char *argv[]) {
   char command[PATH_MAX];
 
-  while (true) {
+  while (1) {
     // read input
     printf("Enter a command: ");
     fflush(stdout);
