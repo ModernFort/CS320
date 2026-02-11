@@ -4,20 +4,28 @@
 #include <errno.h>
 
 int main(int argc, char *argv[]) {
-  printf("Enter a command: ");
-  fflush(stdout);
   char command[PATH_MAX];
-  int result = scanf("%s", command);
-  if (result == EOF) {
-    if (ferror(stdin) != 0) {
-      perror("Scanf");
-      exit(errno);
+
+  while (true) {
+    // read input
+    printf("Enter a command: ");
+    fflush(stdout);
+    int result = scanf("%s", command);
+    if (result == EOF) {
+      // EOF received
+      if (ferror(stdin) != 0) {
+        // read error
+        perror("Scanf");
+        exit(errno);
+      }
+      // True EOF
+      printf("End of input received, exiting.\n");
+      exit(0);
+    } else if (result < 1) {
+      printf("Matching failed.\n");
+    } else {
+      printf("Command %s received.\n", command);
+      // add your commands as else if (condition) to trigger appropriate libraries
     }
-    printf("End of input received, exiting.\n");
-    exit(0);
-  } else if (result < 1) {
-    printf("Matching failed.\n");
   }
-  printf("Hello World!\n");
-  exit(0);
 }
