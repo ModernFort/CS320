@@ -1,9 +1,12 @@
 #ifndef MANPAGE_H
 #define MANPAGE_H
+#include <string.h>
+
+#include "manpage.c"
 
 // Main file will call request_manpage() and this will automatically 
 // print the description to stdout
-void request_manpage(char* message);
+void request_manpage(char* query);
 
 // Go into a file and grab the correct description based on the query
 char* get_description(char* query);
