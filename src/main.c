@@ -68,6 +68,20 @@ int main(int argc, char *argv[]) {
           printf("\n");
         }
       }
+      int paramsc = param_idx;
+      
+      printf("params: %d\n", paramsc);
+      if(strcmp(cmd_token, "grep") == 0){
+        //Call grep and pass params to process the command, validate input within grep and continue if grep returns an error. Print the error in main.
+        //Some pseudocode as an example:
+        
+        // int grep_result = grep(params);
+        // if(grep_result != 0){
+        //   print_error(grep_result);
+        // }
+        // continue;
+
+      }
       // add your commands as else if (condition) to trigger appropriate libraries
     }
   }
