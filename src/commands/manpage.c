@@ -1,14 +1,21 @@
 #include "manpage.h"
 const char* defn[] = {
-    "definition 1"
+    "definition",
+    "does grep things"
+    "touches things"
 };
 const char* cmd[] = {
-    "command 1"
+    "command",
+    "grep"
+    "touch"
 };
 
 void request_manpage(char* query) {
-    if (!query) {
-        printf("\tman [command]\n");
+    if (!query || strlen(query) == 0) {
+        printf("\nHow to use the man function:\n");
+        printf("\t\n\"man [command]\"\n\n");
+        printf("Where the manual will return the manual based on the \"command\" given.\n");
+        printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n\n");
         return;
     }
     for (int i = 0; i < (sizeof(cmd) / sizeof(cmd[0])); i++) {
@@ -17,7 +24,7 @@ void request_manpage(char* query) {
             return;
         }
     }
-    printf("man command %s unknown\n", query);
+    printf("man command \"%s\" unknown\n", query);
 }
 
 char* get_description(char* query){
