@@ -1,9 +1,13 @@
 #include "manpage.h"
 const char* defn[] = {
-    "definition 1"
+    "definition",
+    "does grep things"
+    "touches things"
 };
 const char* cmd[] = {
-    "command 1"
+    "command",
+    "grep"
+    "touch"
 };
 
 void request_manpage(char* query) {
@@ -20,7 +24,7 @@ void request_manpage(char* query) {
             return;
         }
     }
-    printf("man command %s unknown\n", query);
+    printf("man command \"%s\" unknown\n", query);
 }
 
 char* get_description(char* query){
