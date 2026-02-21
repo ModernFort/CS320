@@ -7,8 +7,11 @@ const char* cmd[] = {
 };
 
 void request_manpage(char* query) {
-    if (!query) {
-        printf("\tman [command]\n");
+    if (!query || strlen(query) == 0) {
+        printf("\nHow to use the man function:\n");
+        printf("\t\n\"man [command]\"\n\n");
+        printf("Where the manual will return the manual based on the \"command\" given.\n");
+        printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n\n");
         return;
     }
     for (int i = 0; i < (sizeof(cmd) / sizeof(cmd[0])); i++) {
