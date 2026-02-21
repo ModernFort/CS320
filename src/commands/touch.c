@@ -6,17 +6,16 @@
 #include <errno.h>
 
 /**
-  * method implements all functionality of bash command 'touch'
+  * method implements basic functionality of bash command 'touch'
+  * Supported options are -a and -m
   *
   * @param filepath - a pointer to the path to touch
-  * @param opts - an int, acting as an enum to specify options, where:
-  *   - 0: no options or -am
-  *   - 1: -a
-  *   - 2: -m
+  * @param opts - a pointer to a string containing the options specified by the user;
+  *   if NULL or empty, behavior matches -am
   * 
-  * @returns an int indicating the success or failure of the method
+  * @returns an int indicating the success (0) or failure (-1) of the method
   */
-int touch(char *filepath, unsigned short opts) {
+int touch(char *filepath, char *opts) {
   int result;
   if ((result = access(filepath, F_OK)) < 0) {
     if (errno == ENOENT) {
@@ -26,37 +25,56 @@ int touch(char *filepath, unsigned short opts) {
         perror("Create");
         return result;
       }
-    } else {
-      printf("%d\n", errno);
-      perror("Access");
-      return result;
+      return 0;
     }
-  } else if (opts == 0) {
-    // touch or touch -am or touch -ma
-    if ((result = utimensat(AT_FDCWD, filepath, NULL, 0)) != 0) {
-      perror("Utimensat");
-      return result;
-    }
+    printf("%d\n", errno);
+    perror("Access");
+    return result;
+  }
+  if (opts == NULL || strcmp(opts, "") == 0) {
+    return default(char *filepath);
+  }
+  if (strcmp(opts, "-a") == 0) {
+    return access_only(filepath);
+  }
+  if (strcmp(opts, "-m") == 0) {
+    return mod_only(filepath);
   } else {
-    struct timespec acc;
-    struct timespec mod;
+    fprintf(stderr, "touch: invalid option -- '%s'\n", opts);
+  }
+}
 
-    if (opts == 1) {
-      // touch -a
-      acc.tv_nsec = UTIME_NOW;
-      mod.tv_nsec = UTIME_OMIT;
-    } else {
-      // touch -m
-      acc.tv_nsec = UTIME_OMIT;
-      mod.tv_nsec = UTIME_NOW;
-    }
+int default(char *filepath) {
+  // file exists, update access and modify times
+  if ((result = utimensat(AT_FDCWD, filepath, NULL, 0)) != 0) {
+    perror("Utimensat");
+    return result;
+  }
+  return 0;
+}
 
-    struct timespec times[] = {acc, mod};
+int access_only(char *filepath) {
+  struct timespec acc, mod;
+  acc.tv_nsec = UTIME_NOW;
+  mod.tv_nsec = UTIME_OMIT;
+  struct timespec times[] = {acc, mod};
 
-    if ((result = utimensat(AT_FDCWD, filepath, times, 0)) != 0) {
-      perror("Utimensat");
-      return result;
-    }
+  if ((result = utimensat(AT_FDCWD, filepath, times, 0)) != 0) {
+    perror("Utimensat");
+    return result;
+  }
+  return 0;
+}
+
+int mod_only(char *filepath) {
+  struct timespec acc, mod;
+  acc.tv_nsec = UTIME_OMIT;
+  mod.tv_nsec = UTIME_NOW;
+  struct timespec times[] = {acc, mod};
+
+  if ((result = utimensat(AT_FDCWD, filepath, times, 0)) != 0) {
+    perror("Utimensat");
+    return result;
   }
   return 0;
 }
