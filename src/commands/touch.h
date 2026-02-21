@@ -9,7 +9,7 @@
   * @param opts - a pointer to a string containing the options specified by the user;
   *   if NULL or empty, behavior matches -am
   * 
-  * @returns an int indicating the success or failure of the method
+  * @returns an int indicating the success (0) or failure (-1) of the method
   */
 int touch(char *filepath, char *opts);
 
