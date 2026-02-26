@@ -36,10 +36,9 @@ int main(int argc, char *argv[]) {
       if (feof(stdin)) {
           printf("End of input received, exiting.\n");
           exit(0);
-      } else {
-          perror("fgets");
-          exit(EXIT_FAILURE);
       }
+      perror("fgets");
+      exit(errno);
     } else {
       char* cmd_token = strtok(command_buf, TOKEN_DELIMS);
       if(!cmd_token) {
@@ -81,6 +80,14 @@ int main(int argc, char *argv[]) {
         // }
         // continue;
 
+      }
+      if (strcmp(cmd_token, "touch") == 0) {
+        if (paramsc == 0) {
+          // no path provided
+          printf("ERROR: You must specify a filepath.\n");
+        } else {
+          touch(cmd_params, paramsc);
+        }
       }
       // add your commands as else if (condition) to trigger appropriate libraries
     }
