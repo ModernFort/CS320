@@ -6,18 +6,40 @@
 #include <errno.h>
 
 /**
+  * Method returns 0 or 1 to indicate whether an array of strings
+  * contains a given string.
+  *
+  * @param arr - the array to search
+  * @param size - the size of the array
+  * @param target - the string for which to search in the array
+  *
+  * @returns 1 if the string is in the array, 0 otherwise
+  */
+int contains_string(char **arr, int size, const char *target) {
+  for (int i = 0; i < size; i++) {
+    if (strcmp(arr[i], target) == 0) {
+      // Found
+      return 1;
+    }
+  }
+  // Not found
+  return 0;
+}
+
+/**
   * method implements basic functionality of bash command 'touch'
   * Supported options are -a and -m
   *
   * @param filepath - a pointer to the path to touch
-  * @param opts - a pointer to a string containing the options specified by the user;
+  * @param opts - a pointer to an array containing strings indicating the options specified by the user;
   *   if NULL or empty, behavior matches -am
+  * @param num_opts - the number of option strings in the array pointed to by opts
   * 
   * @returns an int indicating the success (0) or failure (-1) of the method
   */
-int touch(char *filepath, char *opts) {
+int touch(char **params, int num_params) {
   int result;
-  if ((result = access(filepath, F_OK)) < 0) {
+  if ((result = access(params[0], F_OK)) < 0) {
     if (errno == ENOENT) {
       // requested file does not exist, ok to create
       if ((result = creat(filepath, S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH)) < 0) {
@@ -31,21 +53,25 @@ int touch(char *filepath, char *opts) {
     perror("Access");
     return result;
   }
-  if (opts == NULL ||
-      strcmp(opts, "") == 0 ||
-      strcmp(opts, "-m -a") == 0 ||
-      strcmp(opts, "-a -m") == 0) {
-    return default(char *filepath);
+  for (int i = 1; i < num_params; i++) {
+    // validate option parameters
+    if (strcmp(params[i], "-a") != 0 &&
+        strcmp(params[i], "-m") != 0 &&
+        strcmp(params[i], "-ma") != 0 &&
+        strcmp(params[i], "-am") != 0) {
+      fprint(stderr, "touch: invalid option -- '%s'\n", params[i]);
+      return -1;
+    }
   }
-  if (strcmp(opts, "-a") == 0) {
-    return access_only(filepath);
-  }
-  if (strcmp(opts, "-m") == 0) {
-    return mod_only(filepath);
-  } else {
-    fprintf(stderr, "touch: invalid option(s) -- '%s'\n", opts);
+  if (contains_string(params + 1, num_params - 1, "-am") ||
+      contains_string(params + 1, num_params - 1, "-ma") ||
+      (contains_string(params + 1, num_params - 1, "-a") &&
+      contains_string(params + 1, num_params - 1, "-m"))) {
+    // option -ma, -am, or -a and -m
+    return default(params[0]);
   }
 }
+
 
 int default(char *filepath) {
   // file exists, update access and modify times
