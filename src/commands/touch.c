@@ -43,7 +43,7 @@ int touch(char *filepath, char *opts) {
   if (strcmp(opts, "-m") == 0) {
     return mod_only(filepath);
   } else {
-    fprintf(stderr, "touch: invalid option -- '%s'\n", opts);
+    fprintf(stderr, "touch: invalid option(s) -- '%s'\n", opts);
   }
 }
 
