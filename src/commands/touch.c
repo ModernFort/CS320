@@ -31,7 +31,10 @@ int touch(char *filepath, char *opts) {
     perror("Access");
     return result;
   }
-  if (opts == NULL || strcmp(opts, "") == 0) {
+  if (opts == NULL ||
+      strcmp(opts, "") == 0 ||
+      strcmp(opts, "-m -a") == 0 ||
+      strcmp(opts, "-a -m") == 0) {
     return default(char *filepath);
   }
   if (strcmp(opts, "-a") == 0) {
