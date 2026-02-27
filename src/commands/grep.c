@@ -1,4 +1,4 @@
-#include <grep.h>
+#include "grep.h"
 
 //Open the desired file and error check, returning the file pointer on success.
 FILE* open_file(char* user_file){
