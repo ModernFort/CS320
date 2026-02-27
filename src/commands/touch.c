@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 
 /**
   * Method returns 0 or 1 to indicate whether an array of strings
@@ -26,14 +27,50 @@ int contains_string(char **arr, int size, const char *target) {
   return 0;
 }
 
+int standard(char *filepath) {
+  // file exists, update access and modify times
+  int result;
+  if ((result = utimensat(AT_FDCWD, filepath, NULL, 0)) != 0) {
+    perror("Utimensat");
+    return result;
+  }
+  return 0;
+}
+
+int access_only(char *filepath) {
+  struct timespec acc, mod;
+  acc.tv_nsec = UTIME_NOW;
+  mod.tv_nsec = UTIME_OMIT;
+  struct timespec times[] = {acc, mod};
+
+  int result;
+  if ((result = utimensat(AT_FDCWD, filepath, times, 0)) != 0) {
+    perror("Utimensat");
+    return result;
+  }
+  return 0;
+}
+
+int mod_only(char *filepath) {
+  struct timespec acc, mod;
+  acc.tv_nsec = UTIME_OMIT;
+  mod.tv_nsec = UTIME_NOW;
+  struct timespec times[] = {acc, mod};
+
+  int result;
+  if ((result = utimensat(AT_FDCWD, filepath, times, 0)) != 0) {
+    perror("Utimensat");
+    return result;
+  }
+  return 0;
+}
+
 /**
   * method implements basic functionality of bash command 'touch'
-  * Supported options are -a and -m
+  * Supported options are -a, -m, and any combination of the two
   *
-  * @param filepath - a pointer to the path to touch
-  * @param opts - a pointer to an array containing strings indicating the options specified by the user;
-  *   if NULL or empty, behavior matches -am
-  * @param num_opts - the number of option strings in the array pointed to by opts
+  * @param params - a pointer to the parameters
+  * @param num_params - the number of parameters passed to the function
   * 
   * @returns an int indicating the success (0) or failure (-1) of the method
   */
@@ -42,7 +79,7 @@ int touch(char **params, int num_params) {
   if ((result = access(params[0], F_OK)) < 0) {
     if (errno == ENOENT) {
       // requested file does not exist, ok to create
-      if ((result = creat(filepath, S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH)) < 0) {
+      if ((result = creat(params[0], S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH)) < 0) {
         // file creation failed
         perror("Create");
         return result;
@@ -59,7 +96,7 @@ int touch(char **params, int num_params) {
         strcmp(params[i], "-m") != 0 &&
         strcmp(params[i], "-ma") != 0 &&
         strcmp(params[i], "-am") != 0) {
-      fprint(stderr, "touch: invalid option -- '%s'\n", params[i]);
+      fprintf(stderr, "touch: invalid option -- '%s'\n", params[i]);
       return -1;
     }
   }
@@ -68,42 +105,7 @@ int touch(char **params, int num_params) {
       (contains_string(params + 1, num_params - 1, "-a") &&
       contains_string(params + 1, num_params - 1, "-m"))) {
     // option -ma, -am, or -a and -m
-    return default(params[0]);
-  }
-}
-
-
-int default(char *filepath) {
-  // file exists, update access and modify times
-  if ((result = utimensat(AT_FDCWD, filepath, NULL, 0)) != 0) {
-    perror("Utimensat");
-    return result;
-  }
-  return 0;
-}
-
-int access_only(char *filepath) {
-  struct timespec acc, mod;
-  acc.tv_nsec = UTIME_NOW;
-  mod.tv_nsec = UTIME_OMIT;
-  struct timespec times[] = {acc, mod};
-
-  if ((result = utimensat(AT_FDCWD, filepath, times, 0)) != 0) {
-    perror("Utimensat");
-    return result;
-  }
-  return 0;
-}
-
-int mod_only(char *filepath) {
-  struct timespec acc, mod;
-  acc.tv_nsec = UTIME_OMIT;
-  mod.tv_nsec = UTIME_NOW;
-  struct timespec times[] = {acc, mod};
-
-  if ((result = utimensat(AT_FDCWD, filepath, times, 0)) != 0) {
-    perror("Utimensat");
-    return result;
+    return standard(params[0]);
   }
   return 0;
 }
