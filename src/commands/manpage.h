@@ -19,12 +19,9 @@ void request_manpage(char* query);
 /**
  * Go into a file and grab the correct description based on the query.
  * 
- * -This is currently not being used due to the description being stored in the .c file
- * -Also not implemented
- * 
  * @param query
  */
-char* get_description(char* query);
+const char* get_description(char* query);
 
 /** 
  * Adds a description into the manpage
@@ -35,6 +32,14 @@ char* get_description(char* query);
  * @param description
  */
 int add_description(char* query, char* description);
+
+/**
+ * Finds the manpage, and pulls the description from the manpage out 
+ * as a char array. It will then print the array to stdout.
+ * 
+ * @param query
+ */
+int read_description(char* query);
 
 /**
  * Removes a description from the manpage
