@@ -2,7 +2,6 @@
 #define MANPAGE_H
 #include <string.h>
 
-#include "manpage.c"
 
 /**
  * When called, this will check for a definition corresponding to query

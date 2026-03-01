@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include "manpage.h"
+
 const char* defn[] = {
     "--------------------------------\nFunction \"grep\" searches through files \n--------------------------------\n",
     "touches things"

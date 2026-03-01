@@ -2,16 +2,14 @@
 #define TOUCH_H
 
 /**
-  * method implements all functionality of bash command 'touch'
+  * method implements basic functionality of bash command 'touch'
+  * Supported options are -a, -m, and any combination of the two
   *
-  * @param filepath - a pointer to the path to touch
-  * @param opts - an int, acting as an enum to specify options, where:
-  *   - 0: no options or -am
-  *   - 1: -a
-  *   - 2: -m
+  * @param params - a pointer to the parameters
+  * @param num_params - the number of parameters passed to the function
   * 
-  * @returns an int indicating the success or failure of the method
+  * @returns an int indicating the success (0) or failure (-1) of the method
   */
-int touch(char *filepath, unsigned short opts);
+int touch(char **params, int num_params);
 
 #endif
