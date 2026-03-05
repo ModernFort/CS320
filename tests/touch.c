@@ -32,7 +32,7 @@ void file_create_no_opt() {
 
 void file_create_am() {
   file_creation_test_prep();
-  char *opts[] = {"test.tmp" "-am"};
+  char *opts[] = {"test.tmp", "-am"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
   file_creation_test_cleanup();
 }
@@ -91,51 +91,36 @@ void existing_accessible_a() {
   existing_accessible_cleanup();
 }
 
-int remove_write() {
-  struct stat file_stat;
-
-  if (stat("test.tmp", &file_stat) < 0) {
-    CU_FAIL("Stat: Could not prepare environment for testing");
-    return -1;
-  }
-
-  mode_t newPermissions = file_stat.st_mode & ~(S_IWUSR | S_IWGRP | S_IWOTH);
-
-  if (chmod("test.tmp", newPermissions) < 0) {
-    CU_FAIL("Stat: Could not prepare environment for testing");
-    return -1;
-  }
-  return 0;
-}
-
-int existing_inaccessible_prep() {
+void existing_inaccessible_no_opt() {
   int fd = mkstemp("test.tmp");
   if (fd == -1) {
     // file creation failed
     CU_FAIL("Mkstmep: Could not prepare environment for testing.");
-    return -1;
+    return;
   } else {
     close(fd);
     // file created
-    remove_write();
-    return 1;
-  }
-}
+    struct stat file_stat;
 
-void existing_inaccessible_cleanup() {
+    if (stat("test.tmp", &file_stat) < 0) {
+      CU_FAIL("Stat: Could not prepare environment for testing");
+      return;
+    }
+
+    mode_t newPermissions = file_stat.st_mode & ~(S_IWUSR | S_IWGRP | S_IWOTH);
+
+    if (chmod("test.tmp", newPermissions) < 0) {
+      CU_FAIL("Stat: Could not prepare environment for testing");
+      return;
+    }
+  }
+
+  char *opts[] = {"test.tmp"};
+  CU_ASSERT_EQUAL(touch(opts, 1), -1);
   if (remove("test.tmp") != 0) {
     // file removal failed
     CU_FAIL("Remove: Could not cleanup environment");
   }
-}
-
-void existing_inaccessible_no_opt() {
-  if (existing_inaccessible_prep() == -1) {
-    return;
-  }
-  char *opts[] = {"test.tmp"};
-  CU_ASSERT_EQUAL(touch(opts, 1), -1);
-  existing_inaccessible_cleanup();
 }
 
 void invalid_opt() {
@@ -171,6 +156,8 @@ int main() {
   add_test(whiteBox, "Touch test.tmp -am", file_create_am);
   // no file specified
   // run tests
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
   CU_cleanup_registry();
   return CU_get_error();
 }
