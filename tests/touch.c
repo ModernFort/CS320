@@ -58,18 +58,130 @@ void file_create_no_opt() {
   }
 }
 
-void file_create_single_(char **params, int num_params) {
-  if (access(params[0], F_OK) == 0) {
+void file_create_a() {
+  if (access("test.txt", F_OK) == 0) {
     // file exists
-    if (remove(params[0]) != 0) {
+    if (remove("test.txt") != 0) {
       // file removal failed
       CU_FAIL("Remove: Could not prepare environment for testing");
     }
   }
-  CU_ASSERT_EQUAL(touch(params, num_params), 0)
-  // call touch()
-  // assert(
-  // remove file
+  char *opts[] = {"test.txt", "-a"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  if (access(test_file, F_OK) != 0) {
+    // file doesn't exist
+    CU_FAIL("touch test.txt -a: Did not create file");
+  } else {
+    if (remove(test_file) != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not cleanup environment");
+    }
+  }
+}
+
+void file_create_m() {
+  if (access("test.txt", F_OK) == 0) {
+    // file exists
+    if (remove("test.txt") != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not prepare environment for testing");
+    }
+  }
+  char *opts[] = {"test.txt", "-m"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  if (access(test_file, F_OK) != 0) {
+    // file doesn't exist
+    CU_FAIL("touch test.txt -m: Did not create file");
+  } else {
+    if (remove(test_file) != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not cleanup environment");
+    }
+  }
+}
+
+void file_create_am() {
+  if (access("test.txt", F_OK) == 0) {
+    // file exists
+    if (remove("test.txt") != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not prepare environment for testing");
+    }
+  }
+  char *opts[] = {"test.txt" "-am"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  if (access(test_file, F_OK) != 0) {
+    // file doesn't exist
+    CU_FAIL("touch test.txt -am: Did not create file");
+  } else {
+    if (remove(test_file) != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not cleanup environment");
+    }
+  }
+}
+
+void file_create_ma() {
+  if (access("test.txt", F_OK) == 0) {
+    // file exists
+    if (remove("test.txt") != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not prepare environment for testing");
+    }
+  }
+  char *opts[] = {"test.txt", "-ma"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  if (access(test_file, F_OK) != 0) {
+    // file doesn't exist
+    CU_FAIL("touch test.txt -ma: Did not create file");
+  } else {
+    if (remove(test_file) != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not cleanup environment");
+    }
+  }
+}
+
+void file_create_am_sep() {
+  if (access("test.txt", F_OK) == 0) {
+    // file exists
+    if (remove("test.txt") != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not prepare environment for testing");
+    }
+  }
+  char *opts[] = {"test.txt", "-a", "-m"};
+  CU_ASSERT_EQUAL(touch(opts, 3), 0);
+  if (access(test_file, F_OK) != 0) {
+    // file doesn't exist
+    CU_FAIL("touch test.txt -a -m: Did not create file");
+  } else {
+    if (remove(test_file) != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not cleanup environment");
+    }
+  }
+}
+
+void file_create_ma_sep() {
+  if (access("test.txt", F_OK) == 0) {
+    // file exists
+    if (remove("test.txt") != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not prepare environment for testing");
+    }
+  }
+  char *opts[] = {"test.txt", "-m", "-a"};
+  CU_ASSERT_EQUAL(touch(opts, 3), 0);
+  if (access(test_file, F_OK) != 0) {
+    // file doesn't exist
+    CU_FAIL("touch test.txt -m -a: Did not create file");
+  } else {
+    if (remove(test_file) != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not cleanup environment");
+    }
+  }
 }
 
 void add_test(CU_pSuite suite, const char *name, CU_Testfunc func) {
@@ -81,13 +193,13 @@ void add_test(CU_pSuite suite, const char *name, CU_Testfunc func) {
 }
 
 int main() {
-  printf("Hello\n");
   CU_initialize_registry();
 
   CU_pSuite blackBox = CU_add_suite("Black Box Tests", NULL, NULL);
   CU_pSuite whiteBox = CU_add_suite("White Box Tests", NULL, NULL);
   CU_pSuite integration = CU_add_suite("Integration Tests", NULL, NULL);
   // black box test cases
+  // no file specified
   add_test(blackBox, "Touch", no_file_null);
   add_test(blackBox, "Touch -a", no_file_a);
   add_test(blackBox, "Touch -m", no_file_m);
@@ -95,7 +207,15 @@ int main() {
   add_test(blackBox, "Touch -ma", no_file_ma);
   add_test(blackBox, "Touch -a -m", no_file_am_sep);
   add_test(blackBox, "Touch -m -a", no_file_ma_sep);
+  // file specified does not exist
+  add_test(blackBox, "Touch test.txt", file_create_no_opt);
+  add_test(blackBox, "Touch test.txt -a", file_create_a);
+  add_test(blackBox, "Touch test.txt -m", file_create_m);
+  add_test(blackBox, "Touch test.txt -am", file_create_am);
+  add_test(blackBox, "Touch test.txt -ma", file_create_ma);
+  add_test(blackBox, "Touch test.txt -a -m", file_create_am_sep);
+  add_test(blackBox, "Touch test.txt -m -a", file_create_ma_sep);
   // run tests
-  // cleanup registry
+  CU_cleanup_registry();
   return CU_get_error();
 }
