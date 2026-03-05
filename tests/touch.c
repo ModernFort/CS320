@@ -38,7 +38,6 @@ void no_file_ma_sep() {
   CU_ASSERT_EQUAL(touch(ma_sep, 2), -1);
 }
 
-/*
 void file_creation_test_prep() {
   if (access("test.txt", F_OK) == 0) {
     // file exists
@@ -47,18 +46,9 @@ void file_creation_test_prep() {
       CU_FAIL("Remove: Could not prepare environment for testing");
     }
   }
-}*/
+}
 
-void file_create_no_opt() {
-  if (access("test.txt", F_OK) == 0) {
-    // file exists
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not prepare environment for testing");
-    }
-  }
-  char *opts[] = {"test.txt"};
-  CU_ASSERT_EQUAL(touch(opts, 1), 0);
+void file_creation_test_cleanup() {
   if (access("test.txt", F_OK) != 0) {
     // file doesn't exist
     CU_FAIL("touch test.txt: Did not create file");
@@ -70,130 +60,53 @@ void file_create_no_opt() {
   }
 }
 
+void file_create_no_opt() {
+  file_creation_test_prep();
+  char *opts[] = {"test.txt"};
+  CU_ASSERT_EQUAL(touch(opts, 1), 0);
+  file_creation_test_cleanup();
+}
+
 void file_create_a() {
-  if (access("test.txt", F_OK) == 0) {
-    // file exists
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not prepare environment for testing");
-    }
-  }
+  file_creation_test_prep();
   char *opts[] = {"test.txt", "-a"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
-  if (access("test.txt", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("touch test.txt -a: Did not create file");
-  } else {
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
-  }
+  file_creation_test_cleanup();
 }
 
 void file_create_m() {
-  if (access("test.txt", F_OK) == 0) {
-    // file exists
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not prepare environment for testing");
-    }
-  }
+  file_creation_test_prep();
   char *opts[] = {"test.txt", "-m"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
-  if (access("test.txt", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("touch test.txt -m: Did not create file");
-  } else {
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
-  }
+  file_creation_test_cleanup();
 }
 
 void file_create_am() {
-  if (access("test.txt", F_OK) == 0) {
-    // file exists
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not prepare environment for testing");
-    }
-  }
+  file_creation_test_prep();
   char *opts[] = {"test.txt" "-am"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
-  if (access("test.txt", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("touch test.txt -am: Did not create file");
-  } else {
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
-  }
+  file_creation_test_cleanup();
 }
 
 void file_create_ma() {
-  if (access("test.txt", F_OK) == 0) {
-    // file exists
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not prepare environment for testing");
-    }
-  }
+  file_creation_test_prep();
   char *opts[] = {"test.txt", "-ma"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
-  if (access("test.txt", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("touch test.txt -ma: Did not create file");
-  } else {
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
-  }
+  file_creation_test_cleanup();
 }
 
 void file_create_am_sep() {
-  if (access("test.txt", F_OK) == 0) {
-    // file exists
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not prepare environment for testing");
-    }
-  }
+  file_creation_test_prep();
   char *opts[] = {"test.txt", "-a", "-m"};
   CU_ASSERT_EQUAL(touch(opts, 3), 0);
-  if (access("test.txt", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("touch test.txt -a -m: Did not create file");
-  } else {
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
-  }
+  file_creation_test_cleanup();
 }
 
 void file_create_ma_sep() {
-  if (access("test.txt", F_OK) == 0) {
-    // file exists
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not prepare environment for testing");
-    }
-  }
+  file_creation_test_prep();
   char *opts[] = {"test.txt", "-m", "-a"};
   CU_ASSERT_EQUAL(touch(opts, 3), 0);
-  if (access("test.txt", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("touch test.txt -m -a: Did not create file");
-  } else {
-    if (remove("test.txt") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
-  }
+  file_creation_test_cleanup();
 }
 
 void add_test(CU_pSuite suite, const char *name, CU_TestFunc func) {
