@@ -6,6 +6,12 @@
 #include <time.h>
 #include "../src/commands/touch.h"
 
+/**
+ * helper to any file creation tests
+ * for test prep
+ * checks if tmp file is present and deletes if necessary
+ * function triggers fail if removal unsuccessful
+*/
 void file_creation_test_prep() {
   if (access("test.tmp", F_OK) == 0) {
     // file exists
@@ -16,6 +22,11 @@ void file_creation_test_prep() {
   }
 }
 
+/**
+ * helper to any file creation tests
+ * for test cleanup
+ * removes tmp file and triggers fail if removal unsuccessful
+  */
 void file_creation_test_cleanup() {
   if (remove("test.tmp") != 0) {
     // file removal failed
@@ -23,6 +34,11 @@ void file_creation_test_cleanup() {
   }
 }
 
+/**
+ * @Test
+ * Tests touch() where file specified does not exist
+ * No options specified
+  */
 void file_create_no_opt() {
   file_creation_test_prep();
   char *opts[] = {"test.tmp"};
@@ -30,6 +46,11 @@ void file_create_no_opt() {
   file_creation_test_cleanup();
 }
 
+/**
+ * @Test
+ * Tests touch() where file specified does not exist
+ * options: -am
+  */
 void file_create_am() {
   file_creation_test_prep();
   char *opts[] = {"test.tmp", "-am"};
@@ -37,6 +58,13 @@ void file_create_am() {
   file_creation_test_cleanup();
 }
 
+/**
+ * helper method to tests involving an existing, accessible file
+ * assumes tmp file does not exist
+ * creates tmp file
+ *
+ * @returns 1 on success, -1 on error
+  */
 int existing_accessible_prep() {
   int fd = mkstemp("test.tmp");
   if (fd == -1) {
@@ -50,6 +78,14 @@ int existing_accessible_prep() {
   }
 }
 
+/**
+ * helper method retrieves access and modify times for tmp file,
+ * stores them in array pointed to by times
+ *
+ * @param times - a pointer to the first element of a 4-element array of time_t
+ *
+ * @returns 0 on success or -1 on failure
+  */
 int retrieve_mod_and_acc(time_t *times) {
   struct stat file_stat;
   if (stat("test.tmp", &file_stat) < 0) {
@@ -63,6 +99,10 @@ int retrieve_mod_and_acc(time_t *times) {
   return 0;
 }
 
+/**
+ * helper to tests involving an existing, accessible file
+ * removes tmp file, and fails test if removal fails
+  */
 void existing_accessible_cleanup() {
   if (remove("test.tmp") != 0) {
     // file removal failed
@@ -70,6 +110,12 @@ void existing_accessible_cleanup() {
   }
 }
 
+/**
+ * @Test
+ * tests the command "touch test.tmp -a", where tmp file
+ * exists and is accessible
+ * confirms access time updated
+  */
 void existing_accessible_a() {
   if (existing_accessible_prep() == -1) {
     return;
@@ -91,6 +137,12 @@ void existing_accessible_a() {
   existing_accessible_cleanup();
 }
 
+/**
+ * @Test
+ * tests the command "touch test.tmp", where tmp file
+ * exists and is accessible
+ * confirms access and modification times updated
+  */
 void existing_inaccessible_no_opt() {
   int fd = mkstemp("test.tmp");
   if (fd == -1) {
@@ -123,6 +175,10 @@ void existing_inaccessible_no_opt() {
   }
 }
 
+/**
+ * @Test
+ * tests touch() when an invalid option is passed
+  */
 void invalid_opt() {
   if (existing_accessible_prep() == -1) {
     return;
@@ -132,6 +188,14 @@ void invalid_opt() {
   existing_accessible_cleanup();
 }
 
+/**
+ * helper function to add test "name" to suite "suite"
+ * performs requisite error checking
+ *
+ * @param suite - the test suite to which to add the test
+ * @param name - a pointer to a string which is the name of the test
+ * @param func - the test function pointer
+  */
 void add_test(CU_pSuite suite, const char *name, CU_TestFunc func) {
   if (CU_add_test(suite, name, func) == NULL) {
     fprintf(stderr, "Error: Unable to add test '%s' to the suite. Error code: %d\n", name, CU_get_error());
@@ -151,11 +215,8 @@ int main() {
   add_test(blackBox, "Existing touch test.tmp -a", existing_accessible_a);
   add_test(blackBox, "Inaccessible touch test.tmp", existing_inaccessible_no_opt);
   add_test(blackBox, "Touch test.tmp -s", invalid_opt);
-  // whitebox
   // the following test, along with the blackbox tests provide statement coverage of touch()
   add_test(whiteBox, "Touch test.tmp -am", file_create_am);
-  // no file specified
-  // run tests
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();
