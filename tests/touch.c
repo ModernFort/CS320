@@ -141,11 +141,6 @@ int retrieve_mod_and_acc(time_t *times) {
   return 0;
 }
 
-void check_mod_and_acc(time_t *before, time_t *after) {
-  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
-  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
-}
-
 void existing_accessible_cleanup() {
   if (access("test.tmp", F_OK) != 0) {
     // file doesn't exist
@@ -158,7 +153,7 @@ void existing_accessible_cleanup() {
   }
 }
 
-void existing_accessible_no_opts() {
+void existing_accessible_no_opt() {
   int new_file = existing_accessible_prep();
   if (new_file == -1) {
     return;
@@ -175,7 +170,152 @@ void existing_accessible_no_opts() {
     // retrieval failed
     return;
   }
-  check_mod_and_acc(before, after);
+  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
+  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
+  if (new_file) {
+    existing_accessible_cleanup();
+  }
+}
+
+void existing_accessible_a() {
+  int new_file = existing_accessible_prep();
+  if (new_file == -1) {
+    return;
+  }
+  time_t before[4];
+  if (retrieve_mod_and_acc(before) == -1) {
+    // retrieval failed
+    return;
+  }
+  char *opts[] = {"test.tmp", "-a"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  time_t after[4];
+  if (retrieve_mod_and_acc(after) == -1) {
+    // retrieval failed
+    return;
+  }
+  CU_ASSERT(before[0] == after[0] && before[1] == after[1]);
+  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
+  if (new_file) {
+    existing_accessible_cleanup();
+  }
+}
+
+void existing_accessible_m() {
+  int new_file = existing_accessible_prep();
+  if (new_file == -1) {
+    return;
+  }
+  time_t before[4];
+  if (retrieve_mod_and_acc(before) == -1) {
+    // retrieval failed
+    return;
+  }
+  char *opts[] = {"test.tmp", "-m"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  time_t after[4];
+  if (retrieve_mod_and_acc(after) == -1) {
+    // retrieval failed
+    return;
+  }
+  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
+  CU_ASSERT(before[2] == after[2] && after[3] == after[3]);
+  if (new_file) {
+    existing_accessible_cleanup();
+  }
+}
+
+void existing_accessible_am() {
+  int new_file = existing_accessible_prep();
+  if (new_file == -1) {
+    return;
+  }
+  time_t before[4];
+  if (retrieve_mod_and_acc(before) == -1) {
+    // retrieval failed
+    return;
+  }
+  char *opts[] = {"test.tmp", "-am"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  time_t after[4];
+  if (retrieve_mod_and_acc(after) == -1) {
+    // retrieval failed
+    return;
+  }
+  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
+  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
+  if (new_file) {
+    existing_accessible_cleanup();
+  }
+}
+
+void existing_accessible_ma() {
+  int new_file = existing_accessible_prep();
+  if (new_file == -1) {
+    return;
+  }
+  time_t before[4];
+  if (retrieve_mod_and_acc(before) == -1) {
+    // retrieval failed
+    return;
+  }
+  char *opts[] = {"test.tmp", "-ma"};
+  CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  time_t after[4];
+  if (retrieve_mod_and_acc(after) == -1) {
+    // retrieval failed
+    return;
+  }
+  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
+  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
+  if (new_file) {
+    existing_accessible_cleanup();
+  }
+}
+
+void existing_accessible_am_sep() {
+  int new_file = existing_accessible_prep();
+  if (new_file == -1) {
+    return;
+  }
+  time_t before[4];
+  if (retrieve_mod_and_acc(before) == -1) {
+    // retrieval failed
+    return;
+  }
+  char *opts[] = {"test.tmp", "-a", "-m"};
+  CU_ASSERT_EQUAL(touch(opts, 3), 0);
+  time_t after[4];
+  if (retrieve_mod_and_acc(after) == -1) {
+    // retrieval failed
+    return;
+  }
+  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
+  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
+  if (new_file) {
+    existing_accessible_cleanup();
+  }
+}
+
+void existing_accessible_ma_sep() {
+  int new_file = existing_accessible_prep();
+  if (new_file == -1) {
+    return;
+  }
+  time_t before[4];
+  if (retrieve_mod_and_acc(before) == -1) {
+    // retrieval failed
+    return;
+  }
+  char *opts[] = {"test.tmp", "-m", "-a"};
+  CU_ASSERT_EQUAL(touch(opts, 3), 0);
+  time_t after[4];
+  if (retrieve_mod_and_acc(after) == -1) {
+    // retrieval failed
+    return;
+  }
+  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
+  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
   if (new_file) {
     existing_accessible_cleanup();
   }
@@ -212,6 +352,14 @@ int main() {
   add_test(blackBox, "Touch test.tmp -ma", file_create_ma);
   add_test(blackBox, "Touch test.tmp -a -m", file_create_am_sep);
   add_test(blackBox, "Touch test.tmp -m -a", file_create_ma_sep);
+  // file specified exists and is accessible
+  add_test(blackBox, "Existing touch test.tmp", existing_accessible_no_opt);
+  add_test(blackBox, "Existing touch test.tmp -a", existing_accessible_a);
+  add_test(blackBox, "Existing touch test.tmp -m", existing_accessible_m);
+  add_test(blackBox, "Existing touch test.tmp -am", existing_accessible_am);
+  add_test(blackBox, "Existing touch test.tmp -ma", existing_accessible_ma);
+  add_test(blackBox, "Existing touch test.tmp -a -m", existing_accessible_am_sep);
+  add_test(blackBox, "Existing touch test.tmp -m -a", existing_accessible_ma_sep);
   // run tests
   CU_cleanup_registry();
   return CU_get_error();
