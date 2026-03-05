@@ -51,14 +51,9 @@ void file_creation_test_prep() {
 }
 
 void file_creation_test_cleanup() {
-  if (access("test.tmp", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("touch test.tmp: Did not create file");
-  } else {
-    if (remove("test.tmp") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
+  if (remove("test.tmp") != 0) {
+    // file removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
   }
 }
 
@@ -112,10 +107,6 @@ void file_create_ma_sep() {
 }
 
 int existing_accessible_prep() {
-  if (access("test.tmp", F_OK) == 0) {
-    // file exists
-    return 0;
-  }
   int fd = mkstemp("test.tmp");
   if (fd == -1) {
     // file creation failed
@@ -142,20 +133,14 @@ int retrieve_mod_and_acc(time_t *times) {
 }
 
 void existing_accessible_cleanup() {
-  if (access("test.tmp", F_OK) != 0) {
-    // file doesn't exist
-    CU_FAIL("File deleted");
-  } else {
-    if (remove("test.tmp") != 0) {
-      // file removal failed
-      CU_FAIL("Remove: Could not cleanup environment");
-    }
+  if (remove("test.tmp") != 0) {
+    // file removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
   }
 }
 
 void existing_accessible_no_opt() {
-  int new_file = existing_accessible_prep();
-  if (new_file == -1) {
+  if (existing_accessible_prep() == -1) {
     return;
   }
   time_t before[4];
@@ -172,14 +157,11 @@ void existing_accessible_no_opt() {
   }
   CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
   CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
-  if (new_file) {
-    existing_accessible_cleanup();
-  }
+  existing_accessible_cleanup();
 }
 
 void existing_accessible_a() {
-  int new_file = existing_accessible_prep();
-  if (new_file == -1) {
+  if (existing_accessible_prep() == -1) {
     return;
   }
   time_t before[4];
@@ -196,14 +178,11 @@ void existing_accessible_a() {
   }
   CU_ASSERT(before[0] == after[0] && before[1] == after[1]);
   CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
-  if (new_file) {
-    existing_accessible_cleanup();
-  }
+  existing_accessible_cleanup();
 }
 
 void existing_accessible_m() {
-  int new_file = existing_accessible_prep();
-  if (new_file == -1) {
+  if (existing_accessible_prep() == -1) {
     return;
   }
   time_t before[4];
@@ -220,14 +199,11 @@ void existing_accessible_m() {
   }
   CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
   CU_ASSERT(before[2] == after[2] && after[3] == after[3]);
-  if (new_file) {
-    existing_accessible_cleanup();
-  }
+  existing_accessible_cleanup();
 }
 
 void existing_accessible_am() {
-  int new_file = existing_accessible_prep();
-  if (new_file == -1) {
+  if (existing_accessible_prep() == -1) {
     return;
   }
   time_t before[4];
@@ -244,14 +220,11 @@ void existing_accessible_am() {
   }
   CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
   CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
-  if (new_file) {
-    existing_accessible_cleanup();
-  }
+  existing_accessible_cleanup();
 }
 
 void existing_accessible_ma() {
-  int new_file = existing_accessible_prep();
-  if (new_file == -1) {
+  if (existing_accessible_prep() == -1) {
     return;
   }
   time_t before[4];
@@ -268,14 +241,11 @@ void existing_accessible_ma() {
   }
   CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
   CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
-  if (new_file) {
-    existing_accessible_cleanup();
-  }
+  existing_accessible_cleanup();
 }
 
 void existing_accessible_am_sep() {
-  int new_file = existing_accessible_prep();
-  if (new_file == -1) {
+  if (existing_accessible_prep() == -1) {
     return;
   }
   time_t before[4];
@@ -292,14 +262,11 @@ void existing_accessible_am_sep() {
   }
   CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
   CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
-  if (new_file) {
-    existing_accessible_cleanup();
-  }
+  existing_accessible_cleanup();
 }
 
 void existing_accessible_ma_sep() {
-  int new_file = existing_accessible_prep();
-  if (new_file == -1) {
+  if (existing_accessible_prep() == -1) {
     return;
   }
   time_t before[4];
@@ -316,9 +283,108 @@ void existing_accessible_ma_sep() {
   }
   CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
   CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
-  if (new_file) {
-    existing_accessible_cleanup();
+  existing_accessible_cleanup();
+}
+
+int remove_write() {
+  struct stat file_stat;
+
+  if (stat("test.tmp", &file_stat) < 0) {
+    CU_FAIL("Stat: Could not prepare environment for testing");
+    return -1;
   }
+
+  mode_t newPermissions = file_stat.st_mode & ~(S_IWUSR | S_IWGRP | S_IWOTH);
+
+  if (chmod("test.tmp", newPermissions) < 0) {
+    CU_FAIL("Stat: Could not prepare environment for testing");
+    return -1;
+  }
+  return 0;
+}
+
+int existing_inaccessible_prep() {
+  int fd = mkstemp("test.tmp");
+  if (fd == -1) {
+    // file creation failed
+    CU_FAIL("Mkstmep: Could not prepare environment for testing.");
+    return -1;
+  } else {
+    close(fd);
+    // file created
+    remove_write();
+    return 1;
+  }
+}
+
+void existing_inaccessible_cleanup() {
+  if (remove("test.tmp") != 0) {
+    // file removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
+  }
+}
+
+void existing_inaccessible_no_opt() {
+  if (existing_inaccessible_prep() == -1) {
+    return;
+  }
+  char *opts[] = {"test.tmp"};
+  CU_ASSERT_EQUAL(touch(opts, 1), -1);
+  existing_inaccessible_cleanup();
+}
+
+void existing_inaccessible_a() {
+  if (existing_inaccessible_prep() == -1) {
+    return;
+  }
+  char *opts[] = {"test.tmp", "-a"};
+  CU_ASSERT_EQUAL(touch(opts, 2), -1);
+  existing_inaccessible_cleanup();
+}
+
+void existing_inaccessible_m() {
+  if (existing_inaccessible_prep() == -1) {
+    return;
+  }
+  char *opts[] = {"test.tmp", "-m"};
+  CU_ASSERT_EQUAL(touch(opts, 2), -1);
+  existing_inaccessible_cleanup();
+}
+
+void existing_inaccessible_am() {
+  if (existing_inaccessible_prep() == -1) {
+    return;
+  }
+  char *opts[] = {"test.tmp", "-am"};
+  CU_ASSERT_EQUAL(touch(opts, 2), -1);
+  existing_inaccessible_cleanup();
+}
+
+void existing_inaccessible_ma() {
+  if (existing_inaccessible_prep() == -1) {
+    return;
+  }
+  char *opts[] = {"test.tmp", "-am"};
+  CU_ASSERT_EQUAL(touch(opts, 2), -1);
+  existing_inaccessible_cleanup();
+}
+
+void existing_inaccessible_am_sep() {
+  if (existing_inaccessible_prep() == -1) {
+    return;
+  }
+  char *opts[] = {"test.tmp", "-a", "-m"};
+  CU_ASSERT_EQUAL(touch(opts, 3), -1);
+  existing_inaccessible_cleanup();
+}
+
+void existing_inaccessible_ma_sep() {
+  if (existing_inaccessible_prep() == -1) {
+    return;
+  }
+  char *opts[] = {"test.tmp", "-m", "-a"};
+  CU_ASSERT_EQUAL(touch(opts, 3), -1);
+  existing_inaccessible_cleanup();
 }
 
 void add_test(CU_pSuite suite, const char *name, CU_TestFunc func) {
@@ -360,6 +426,14 @@ int main() {
   add_test(blackBox, "Existing touch test.tmp -ma", existing_accessible_ma);
   add_test(blackBox, "Existing touch test.tmp -a -m", existing_accessible_am_sep);
   add_test(blackBox, "Existing touch test.tmp -m -a", existing_accessible_ma_sep);
+  // file specified exists but is inaccessible
+  add_test(blackBox, "Inaccessible touch test.tmp", existing_inaccessible_no_opt);
+  add_test(blackBox, "Inaccessible touch test.tmp -a", existing_inaccessible_a);
+  add_test(blackBox, "Inaccessible touch test.tmp -m", existing_inaccessible_m);
+  add_test(blackBox, "Inaccessible touch test.tmp -am", existing_inaccessible_am);
+  add_test(blackBox, "Inaccessible touch test.tmp -ma", existing_inaccessible_ma);
+  add_test(blackBox, "Inaccessible touch test.tmp -a -m", existing_inaccessible_am_sep);
+  add_test(blackBox, "Inaccessible touch test.tmp -m -a", existing_inaccessible_ma_sep);
   // run tests
   CU_cleanup_registry();
   return CU_get_error();
