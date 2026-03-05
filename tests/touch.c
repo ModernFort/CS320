@@ -2,6 +2,8 @@
 #include <CUnit/CUnit.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <time.h>
 #include "../src/commands/touch.h"
 
 void no_file_null() {
@@ -39,9 +41,9 @@ void no_file_ma_sep() {
 }
 
 void file_creation_test_prep() {
-  if (access("test.txt", F_OK) == 0) {
+  if (access("test.tmp", F_OK) == 0) {
     // file exists
-    if (remove("test.txt") != 0) {
+    if (remove("test.tmp") != 0) {
       // file removal failed
       CU_FAIL("Remove: Could not prepare environment for testing");
     }
@@ -49,11 +51,11 @@ void file_creation_test_prep() {
 }
 
 void file_creation_test_cleanup() {
-  if (access("test.txt", F_OK) != 0) {
+  if (access("test.tmp", F_OK) != 0) {
     // file doesn't exist
-    CU_FAIL("touch test.txt: Did not create file");
+    CU_FAIL("touch test.tmp: Did not create file");
   } else {
-    if (remove("test.txt") != 0) {
+    if (remove("test.tmp") != 0) {
       // file removal failed
       CU_FAIL("Remove: Could not cleanup environment");
     }
@@ -62,51 +64,121 @@ void file_creation_test_cleanup() {
 
 void file_create_no_opt() {
   file_creation_test_prep();
-  char *opts[] = {"test.txt"};
+  char *opts[] = {"test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 1), 0);
   file_creation_test_cleanup();
 }
 
 void file_create_a() {
   file_creation_test_prep();
-  char *opts[] = {"test.txt", "-a"};
+  char *opts[] = {"test.tmp", "-a"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
   file_creation_test_cleanup();
 }
 
 void file_create_m() {
   file_creation_test_prep();
-  char *opts[] = {"test.txt", "-m"};
+  char *opts[] = {"test.tmp", "-m"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
   file_creation_test_cleanup();
 }
 
 void file_create_am() {
   file_creation_test_prep();
-  char *opts[] = {"test.txt" "-am"};
+  char *opts[] = {"test.tmp" "-am"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
   file_creation_test_cleanup();
 }
 
 void file_create_ma() {
   file_creation_test_prep();
-  char *opts[] = {"test.txt", "-ma"};
+  char *opts[] = {"test.tmp", "-ma"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
   file_creation_test_cleanup();
 }
 
 void file_create_am_sep() {
   file_creation_test_prep();
-  char *opts[] = {"test.txt", "-a", "-m"};
+  char *opts[] = {"test.tmp", "-a", "-m"};
   CU_ASSERT_EQUAL(touch(opts, 3), 0);
   file_creation_test_cleanup();
 }
 
 void file_create_ma_sep() {
   file_creation_test_prep();
-  char *opts[] = {"test.txt", "-m", "-a"};
+  char *opts[] = {"test.tmp", "-m", "-a"};
   CU_ASSERT_EQUAL(touch(opts, 3), 0);
   file_creation_test_cleanup();
+}
+
+int existing_accessible_prep() {
+  if (access("test.tmp", F_OK) == 0) {
+    // file exists
+    return 0;
+  }
+  int fd = mkstemp("test.tmp");
+  if (fd == -1) {
+    // file creation failed
+    CU_FAIL("Mkstmep: Could not prepare environment for testing.");
+    return -1;
+  } else {
+    close(fd);
+    // file created
+    return 1;
+  }
+}
+
+int retrieve_mod_and_acc(time_t *times) {
+  struct stat file_stat;
+  if (stat("test.tmp", &file_stat) < 0) {
+    CU_FAIL("Stat: Could not retrieve file information");
+    return -1;
+  }
+  times[0] = file_stat.st_atim.tv_sec;
+  times[1] = file_stat.st_atim.tv_nsec;
+  times[2] = file_stat.st_mtim.tv_sec;
+  times[3] = file_stat.st_mtim.tv_nsec;
+  return 0;
+}
+
+void check_mod_and_acc(time_t *before, time_t *after) {
+  CU_ASSERT(before[0] != after[0] || before[1] != after[1]);
+  CU_ASSERT(before[2] != after[2] || after[3] != after[3]);
+}
+
+void existing_accessible_cleanup() {
+  if (access("test.tmp", F_OK) != 0) {
+    // file doesn't exist
+    CU_FAIL("File deleted");
+  } else {
+    if (remove("test.tmp") != 0) {
+      // file removal failed
+      CU_FAIL("Remove: Could not cleanup environment");
+    }
+  }
+}
+
+void existing_accessible_no_opts() {
+  int new_file = existing_accessible_prep();
+  if (new_file == -1) {
+    return;
+  }
+  time_t before[4];
+  if (retrieve_mod_and_acc(before) == -1) {
+    // retrieval failed
+    return;
+  }
+  char *opts[] = {"test.tmp"};
+  CU_ASSERT_EQUAL(touch(opts, 1), 0);
+  time_t after[4];
+  if (retrieve_mod_and_acc(after) == -1) {
+    // retrieval failed
+    return;
+  }
+  check_mod_and_acc(before, after);
+  if (new_file) {
+    existing_accessible_cleanup();
+  }
 }
 
 void add_test(CU_pSuite suite, const char *name, CU_TestFunc func) {
@@ -133,13 +205,13 @@ int main() {
   add_test(blackBox, "Touch -a -m", no_file_am_sep);
   add_test(blackBox, "Touch -m -a", no_file_ma_sep);
   // file specified does not exist
-  add_test(blackBox, "Touch test.txt", file_create_no_opt);
-  add_test(blackBox, "Touch test.txt -a", file_create_a);
-  add_test(blackBox, "Touch test.txt -m", file_create_m);
-  add_test(blackBox, "Touch test.txt -am", file_create_am);
-  add_test(blackBox, "Touch test.txt -ma", file_create_ma);
-  add_test(blackBox, "Touch test.txt -a -m", file_create_am_sep);
-  add_test(blackBox, "Touch test.txt -m -a", file_create_ma_sep);
+  add_test(blackBox, "Touch test.tmp", file_create_no_opt);
+  add_test(blackBox, "Touch test.tmp -a", file_create_a);
+  add_test(blackBox, "Touch test.tmp -m", file_create_m);
+  add_test(blackBox, "Touch test.tmp -am", file_create_am);
+  add_test(blackBox, "Touch test.tmp -ma", file_create_ma);
+  add_test(blackBox, "Touch test.tmp -a -m", file_create_am_sep);
+  add_test(blackBox, "Touch test.tmp -m -a", file_create_ma_sep);
   // run tests
   CU_cleanup_registry();
   return CU_get_error();
