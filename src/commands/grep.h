@@ -12,8 +12,9 @@
 int flag_valid(const char* param);
 
 //Takes an array of strings that represent the parameters the user used when using grep. Returns 0 if invalid params are
-//given, 1 if all params are valid.
-int validate_params(const char** params);
+//given, 1 if all params are valid. The amount of params must also be passed (in similar fashion to main) so the param
+//array can be accurately iterated over.
+int validate_params(int param_count, const char** params);
 
 //Takes an array of strings representing arguments the user used when calling grep and parses them, setting relevant
 //global flags/variables like files and matching strings to be used in text/pattern matching later.
