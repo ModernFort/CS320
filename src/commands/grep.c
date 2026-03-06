@@ -78,34 +78,7 @@ int match_pattern(FILE* fp, const char* pattern_to_match){
 }
 
 int contains_text(char* line, const char* str_to_match){
-    //If the line itself is smaller in length than the string to be checked,
-    //return 0 automatically.
-    int line_len = strlen(line);
-    int match_len = strlen(str_to_match);
-    if(line_len < match_len){
-        return 0;
-    }
-
-    //Define start/end indices for a sliding window of length=match
-    int start = 0;
-    int end = match_len - 1;
-
-    //Iterate over the line until the remaining length is less than the match,
-    //in which case a match is impossible.
-    for(int i = 0; i < (line_len - match_len + 1); i++){
-        //Build a null-terminated substring of the line to be checked based off start/end.
-        char* cmp = malloc(match_len + 1);
-        memcpy(cmp, line + start, match_len);
-        cmp[match_len] = '\0';
-
-        //Compare the substring of the line to the match string, return 1 if they are equivalent
-        if(strcmp(cmp, str_to_match) == 0) return 1;
-
-        //If no match is found, increment start and end and check the next substring.
-        start++;
-        end++;
-    }
-
-    //No match was found, return false
-    return 0;
+    //Use strstr to check the line for the substring, returning 0 if the string
+    //is not found, in which case strstr returns NULL.
+    return strstr(line, str_to_match) != NULL;
 }
