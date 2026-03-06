@@ -7,10 +7,6 @@
 #ifndef GREP_H
 #define GREP_H
 
-//Returns an array of the valid flags that can be used with grep, to be used for param validation.
-//Includes both the long and short versions of each flag.
-const char** get_valid_flags();
-
 //Takes an array of strings that represent the parameters the user used when using grep. Returns 0 if invalid params are
 //given, 1 if all params are valid.
 int validate_params(const char** params);
