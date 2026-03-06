@@ -30,6 +30,21 @@ static const char *VALID_FLAGS[] = {
     "-s", "--no-messages" //Suppress error messages about unreadable/nonexistent files 
 };
 
+//Compute the length of the valid flags array one time and store as a static global.
+//Find the length by dividing the size of the array by the size of an entry to get total 
+//amount of entries.
+static const int VALID_FLAG_COUNT = 
+    sizeof(VALID_FLAGS) / sizeof(VALID_FLAGS[0]);
+
+int flag_valid(const char* param){
+    //Iterate over the array of valid flags, if a match is found return 1.
+    for(int i = 0; i < VALID_FLAG_COUNT; i++) {
+        if(strcmp(param, VALID_FLAGS[i]) == 0) return 1;
+    }
+    //If the entire array has been searched and no match was found, return 0.
+    return 0;
+}
+
 int validate_params(const char** params){
 
 }
