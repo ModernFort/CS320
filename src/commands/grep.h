@@ -9,7 +9,7 @@
 
 //Returns an array of the valid flags that can be used with grep, to be used for param validation.
 //Includes both the long and short versions of each flag.
-char** get_valid_flags();
+const char** get_valid_flags();
 
 //Takes an array of strings that represent the parameters the user used when using grep. Returns 0 if invalid params are
 //given, 1 if all params are valid.
@@ -33,7 +33,7 @@ int match_pattern(FILE* fp, const char* pattern_to_match);
 
 //Simple util function that takes a line from a file and uses a sliding window to determine if the line
 //Contains the given string. returns 1 if the string is contained, 0 if not (for easy boolean checks)
-int contains_text(const char* line, const char* str_to_match);
+int contains_text(char* line, const char* str_to_match);
 
 //TODO: Implement match functionality for things other than file pointers, like piped output through dynamically created files (EG through cat)
 #endif

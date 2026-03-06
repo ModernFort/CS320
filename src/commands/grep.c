@@ -4,8 +4,8 @@
 //for easy conversion.
 #define TO_LOWER(x) (x + 32)
 
-char** get_valid_flags(){
-    return(
+const char** get_valid_flags(){
+    static const char *flags[] = {
         //Pattern matching flags
         "-E", "--extended-regexp", //Flags to indicate extended regex matching
         "-F", "--fixed-strings", //Indicates plain text matching
@@ -23,8 +23,10 @@ char** get_valid_flags(){
         "-l", "--files-with-matches", //Print files that do contain matching text
         "-m", "--max-count=", //Stop reading a file after --max-count= n matching lines
         "-o", "--only-matching", //Print only the matching parts of a line seperate from the actual line
-        "-s", "--no-messages" //Suppress error messages about unreadable/nonexistent files
-    )
+        "-s", "--no-messages" //Suppress error messages about unreadable/nonexistent files 
+    };
+
+    return(flags);
 }
 
 int validate_params(const char** params){
@@ -75,35 +77,35 @@ int match_pattern(FILE* fp, const char* pattern_to_match){
 
 }
 
-int contains_text(const char* line, const char* str_to_match){
+int contains_text(char* line, const char* str_to_match){
     //If the line itself is smaller in length than the string to be checked,
     //return 0 automatically.
     int line_len = strlen(line);
     int match_len = strlen(str_to_match);
-
     if(line_len < match_len){
         return 0;
     }
 
+    //Define start/end indices for a sliding window of length=match
     int start = 0;
-    int end = match_len;
+    int end = match_len - 1;
 
-    while(end <= line_len){
-        for(int ch = 0; ch < match_len; ch++){
-            int matching = 0;
-            //Check the line from the current window start + current character of the window and compare it to
-            //The equivalent char in the string to match. Continue if the chars don't match. 
-            if(line[start + ch] != str_to_match[ch]){
-                continue;
-            } else {
-                matching++;
-                //If the end of the window has been reached and all chars matched, return success.
-                if(matching == match_len) return 1;
-            }
-        }
-        //Slide the window by incrementing both start and end, and check again.
+    //Iterate over the line until the remaining length is less than the match,
+    //in which case a match is impossible.
+    for(int i = 0; i < (line_len - match_len + 1); i++){
+        //Build a null-terminated substring of the line to be checked based off start/end.
+        char* cmp = malloc(match_len + 1);
+        memcpy(cmp, line + start, match_len);
+        cmp[match_len] = '\0';
+
+        //Compare the substring of the line to the match string, return 1 if they are equivalent
+        if(strcmp(cmp, str_to_match) == 0) return 1;
+
+        //If no match is found, increment start and end and check the next substring.
         start++;
         end++;
     }
+
+    //No match was found, return false
     return 0;
 }
