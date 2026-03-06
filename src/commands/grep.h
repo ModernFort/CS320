@@ -2,20 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
 
 #ifndef GREP_H
 #define GREP_H
 
 //Returns an array of the valid flags that can be used with grep, to be used for param validation.
+//Includes both the long and short versions of each flag.
 char** get_valid_flags();
 
 //Takes an array of strings that represent the parameters the user used when using grep. Returns 0 if invalid params are
 //given, 1 if all params are valid.
-int validate_params(char** params);
+int validate_params(const char** params);
 
 //Takes an array of strings representing arguments the user used when calling grep and parses them, setting relevant
 //global flags/variables like files and matching strings to be used in text/pattern matching later.
-int parse_args(char** args);
+int parse_args(const char** args);
 
 //Takes a string as an argument and returns the version with all lowercase, used if ignoring case when checking match.
 char* lower_line(const char* line);
