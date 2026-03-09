@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include "../src/commands/touch.h"
+#include "../src/commands/ls.h"
 
 /**
  * helper to any file creation tests
@@ -188,6 +189,50 @@ void invalid_opt() {
   existing_accessible_cleanup();
 }
 
+int find_string_in_file(const char *filename, const char *search_string) {
+  FILE *file = fopen(filename, "r");
+  if (file == NULL) {
+    CU_FAIL("Ls Output Check: Error opening file");
+    return -1;
+  }
+
+  char line[255];
+  int line_number = 0;
+
+  while (fgets(line, sizeof(line), file)) {
+    line_number++;
+    if (strstr(line, search_string) != NULL) {
+      fclose(file);
+      return 1;
+    }
+  }
+  
+  fclose(file);
+  return 0;
+}
+
+void touch_ls() {
+  char *opts[] = {"test.tmp"};
+  CU_ASSERT_EQUAL(touch(opts, 1), 0);
+
+  FILE *temp_file = fopen("output.tmp", "w");
+  if (temp_file == NULL) {
+      CU_FAIL("Failed to open output.tmp");
+      return;
+  }
+
+  FILE *original_stdout = stdout;
+  stdout = temp_file;
+
+  CU_ASSERT_EQUAL(ls(NULL), 0);
+
+  stdout = original_stdout;
+  fclose(temp_file);
+
+  CU_ASSERT_EQUAL(find_string_in_file("output.tmp", "test.tmp"), 0);
+
+  remove("output.tmp");
+}
 /**
  * helper function to add test "name" to suite "suite"
  * performs requisite error checking
@@ -217,6 +262,7 @@ int main() {
   add_test(blackBox, "Touch test.tmp -s", invalid_opt);
   // the following test, along with the blackbox tests provide statement coverage of touch()
   add_test(whiteBox, "Touch test.tmp -am", file_create_am);
+  add_test(integration, "Touch and ls", touch_ls);
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();
