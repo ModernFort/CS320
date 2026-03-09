@@ -1,7 +1,6 @@
 CC = gcc
 CCFLAGS = -pedantic -Wall
 EXEC = bash
-TEST_EXECS = touch
 LIB_DIR = src/commands
 TEST_DIR = tests
 
@@ -23,8 +22,8 @@ clean:
 $(EXEC): $(OBJS)
 	$(CC) $(CCFLAGS) -o $@ $^ $(LIB_H)
 
-$(TEST_EXECS): %: $(TEST_DIR)/%.o $(LIB_DIR)/%.o
-	$(CC) $(CCFLAGS) -o $@ $^ $(LIB_DIR)/$@.h -lcunit
+touch_test: $(TEST_DIR)/touch.o $(LIB_DIR)/touch.o $(LIB_DIR)/ls.o
+	$(CC) $(CCFLAGS) -o $@ $^ $(LIB_DIR)/touch.h $(LIB_DIR)/ls.h -lcunit
 
 %.o: %.c
 	$(CC) $(CCFLAGS) -c $< -o $@
