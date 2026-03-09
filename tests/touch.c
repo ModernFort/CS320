@@ -211,6 +211,9 @@ int find_string_in_file(const char *filename, const char *search_string) {
   return 0;
 }
 
+/**
+ * integration test between touch and ls
+ */
 void touch_ls() {
   char *opts[] = {"test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 1), 0);
