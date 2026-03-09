@@ -44,6 +44,7 @@ void file_create_no_opt() {
   file_creation_test_prep();
   char *opts[] = {"test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 1), 0);
+  CU_ASSERT_EQUAL(access("test.tmp", F_OK), 0);
   file_creation_test_cleanup();
 }
 
@@ -56,6 +57,7 @@ void file_create_am() {
   file_creation_test_prep();
   char *opts[] = {"test.tmp", "-am"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
+  CU_ASSERT_EQUAL(access("test.tmp", F_OK), 0);
   file_creation_test_cleanup();
 }
 
@@ -141,7 +143,7 @@ void existing_accessible_a() {
 /**
  * @Test
  * tests the command "touch test.tmp", where tmp file
- * exists and is accessible
+ * exists and is inaccessible
  * confirms access and modification times updated
   */
 void existing_inaccessible_no_opt() {
@@ -177,18 +179,13 @@ void existing_inaccessible_no_opt() {
 }
 
 /**
- * @Test
- * tests touch() when an invalid option is passed
-  */
-void invalid_opt() {
-  if (existing_accessible_prep() == -1) {
-    return;
-  }
-  char *opts[] = {"test.tmp", "-s"};
-  CU_ASSERT_EQUAL(touch(opts, 2), -1);
-  existing_accessible_cleanup();
-}
-
+ * Method finds search_string in file 'filename'
+ *
+ * @param filename - a pointer to the name of the file to be searched
+ * @param search_string - a pointer to the string for which to search
+ *
+ * @returns 1 or 0 if the file contains the search string or not
+ */
 int find_string_in_file(const char *filename, const char *search_string) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
@@ -197,10 +194,8 @@ int find_string_in_file(const char *filename, const char *search_string) {
   }
 
   char line[255];
-  int line_number = 0;
 
   while (fgets(line, sizeof(line), file)) {
-    line_number++;
     if (strstr(line, search_string) != NULL) {
       fclose(file);
       return 1;
@@ -212,6 +207,37 @@ int find_string_in_file(const char *filename, const char *search_string) {
 }
 
 /**
+ * @Test
+ * tests touch() when an invalid option is passed
+  */
+void invalid_opt() {
+  if (existing_accessible_prep() == -1) {
+    return;
+  }
+
+  FILE *temp_file = fopen("output.tmp", "w");
+  if (temp_file == NULL) {
+      CU_FAIL("Failed to open output.tmp");
+      return;
+  }
+
+  FILE *original_stderr = stderr;
+  stderr = temp_file;
+
+  char *opts[] = {"test.tmp", "-s"};
+  CU_ASSERT_EQUAL(touch(opts, 2), -1);
+
+  stderr = original_stderr;
+  fclose(temp_file);
+
+  CU_ASSERT_EQUAL(find_string_in_file("output.tmp", "touch: invalid option -- '-s'"), 0);
+
+  existing_accessible_cleanup();
+}
+
+
+/**
+ * @Test
  * integration test between touch and ls
  */
 void touch_ls() {
@@ -236,6 +262,7 @@ void touch_ls() {
 
   remove("output.tmp");
 }
+
 /**
  * helper function to add test "name" to suite "suite"
  * performs requisite error checking

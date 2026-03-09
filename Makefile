@@ -26,5 +26,8 @@ $(EXEC): $(OBJS)
 touch_test: $(TEST_DIR)/touch.o $(LIB_DIR)/touch.o $(LIB_DIR)/ls.o
 	$(CC) $(CCFLAGS) -o $@ $^ $(LIB_DIR)/touch.h $(LIB_DIR)/ls.h -lcunit
 
+ls_test: $(TEST_DIR)/ls.o $(LIB_DIR)/ls.o
+	$(CC) $(CCFLAGS) -o $@ $^ $(LIB_DIR)/ls.h -lcunit
+
 %.o: %.c
 	$(CC) $(CCFLAGS) -c $< -o $@

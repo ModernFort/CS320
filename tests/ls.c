@@ -1,5 +1,6 @@
 #include <CUnit/Basic.h>
 #include <CUnit/CUnit.h>
+#include <stdlib.h>
 #include "../src/commands/ls.h"
 
 void no_path() {
@@ -53,14 +54,9 @@ int main() {
 
   CU_pSuite blackBox = CU_add_suite("Black Box Tests", NULL, NULL);
   CU_pSuite whiteBox = CU_add_suite("White Box Tests", NULL, NULL);
-  CU_pSuite integration = CU_add_suite("Integration Tests", NULL, NULL);
   // black box test cases
   add_test(blackBox, "Ls No Path", no_path);
-  add_test(blackBox, "Existing touch test.tmp -a", existing_accessible_a);
-  add_test(blackBox, "Inaccessible touch test.tmp", existing_inaccessible_no_opt);
-  add_test(blackBox, "Touch test.tmp -s", invalid_opt);
-  // the following test, along with the blackbox tests provide statement coverage of touch()
-  add_test(whiteBox, "Touch test.tmp -am", file_create_am);
+
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();
