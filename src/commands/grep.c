@@ -69,7 +69,7 @@ grep_state init_state(int grep_argc, const char** args){
     //This version of grep must minimally contain a mode (regex or plain text) flag, 
     //followed by match flags (if any), followed by pattern/text, and finally 
     //files to search. The mode is required to be the first argument.
-    if(grep_argc <= 2 || is_flag(args[0])){
+    if(grep_argc <= 2 || !is_flag(args[0])){
         fprintf(stderr, "Usage: grep MODE <MATCH FLAGS> PATTERN FILE <FILE2>...\n");
         fprintf(stderr, "For multiple patterns: grep -e <MATCH FLAGS> PATTERN <PATTERN2>... FILE <FILE2>...\n");
         exit(EXIT_FAILURE);
