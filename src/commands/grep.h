@@ -7,6 +7,40 @@
 #ifndef GREP_H
 #define GREP_H
 
+//Enum ensuring types of matches remain mutually exclusive, so multiple can't be
+//selected at once.
+typedef enum {
+    BASIC_REGEX,
+    EXTENDED_REGEX,
+    PLAIN_TEXT
+} match_type;
+
+//Struct that stores information about the current state of the grep command, like the type
+//of match, selected flags, match count, etc.
+typedef struct {
+    //Can be either extended/basic regex or plain text, but not multiple
+    match_type mode;
+    
+    //Boolean flags representing output options of grep
+    int ignore_case;
+    int invert_match;
+    int suppress_errs;
+    int only_matching;
+    int count_only;
+    int files_with_matches;
+    int files_without_matches;
+
+    //Pattern/file arguments passed at runtime alongside their counts
+    char** patterns;
+    int pattern_count;
+    char** file_paths;
+    int file_count;
+
+    //If max count flag is selected, this stores the maximum matches that can be counted before stopping
+    int max_count;
+
+} grep_state;
+
 //Checks if an individual flag is present in the array of valid flags.
 //Returns 1 if it exists, 0 if not.
 int flag_valid(const char* param);
