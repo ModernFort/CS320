@@ -16,6 +16,19 @@ typedef enum {
     INVALID_MODE //If no valid mode flag, this will be set as the state struct's mode for error handling
 } match_type;
 
+//Structs that store an array of patterns alongside count and an array of file paths alongside count.
+//Defining these as structs allows for easy offloading of pattern/file parsing to helpers, since they
+//need to store and return info about multiple variables.
+typedef struct {
+    char** patterns;
+    int pattern_count;
+} _pattern_info;
+
+typedef struct {
+    char** file_paths;
+    int file_count;
+} _file_info;
+
 //Struct that stores information about the current state of the grep command, like the type
 //of match, selected flags, match count, etc.
 typedef struct {
@@ -32,13 +45,11 @@ typedef struct {
     int files_without_matches;
 
     //Pattern/file arguments passed at runtime alongside their counts
-    char** patterns;
-    int pattern_count;
-    char** file_paths;
-    int file_count;
+    _pattern_info pattern_info;
+    _file_info file_info;
 
     //If max count flag is selected, this stores the maximum matches that can be counted before stopping
-    int max_count;
+    const long max_count;
 
 } grep_state;
 
@@ -47,6 +58,10 @@ int is_flag(char* str);
 
 //Takes a flag as an argument and returns the corresponding mode enum, or INVALID_MODE if none is detected.
 match_type get_mode(char* mode_flag);
+
+//Helpers that take the array of user arguments and return an array of patterns/files with the count of each.
+_pattern_info get_patterns(char** args);
+_file_info get_files(char** args);
 
 //Checks if an individual flag is present in the array of valid flags.
 //Returns 1 if it exists, 0 if not.
