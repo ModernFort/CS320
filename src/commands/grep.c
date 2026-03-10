@@ -63,8 +63,11 @@ int validate_params(int paramc, const char** params){
     return 1;
 }
 
-grep_state init_state(int argc, const char** args){
-
+grep_state init_state(int grep_argc, const char** args){
+    if(grep_argc == 0 || grep_argc == 1){
+        fprintf(stderr, "Usage: grep <OPTIONS>... PATTERNS [FILES]...\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 char* lower_line(const char* line){

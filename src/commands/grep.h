@@ -50,9 +50,10 @@ int flag_valid(const char* param);
 //array can be accurately iterated over.
 int validate_params(int paramc, const char** params);
 
-//Takes an array of strings representing arguments and flags the user passed when calling grep, and creates a new
-//grep state struct based on these args. Validates that flags contain arguments if required, and throws errors if not.
-grep_state init_state(int argc, const char** args);
+//Takes an array of strings representing arguments and flags the user passed when calling grep (not including the grep
+//command itself) and creates a new grep state struct based on these args. Validates that flags contain arguments if 
+//required, and throws errors if not.
+grep_state init_state(int grep_argc, const char** args);
 
 //Takes a string as an argument and returns the version with all lowercase, used if ignoring case when checking match.
 char* lower_line(const char* line);
