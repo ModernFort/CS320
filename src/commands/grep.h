@@ -20,7 +20,7 @@ typedef enum {
 typedef struct {
     //Can be either extended/basic regex or plain text, but not multiple
     match_type mode;
-    
+
     //Boolean flags representing output options of grep
     int ignore_case;
     int invert_match;
@@ -48,11 +48,11 @@ int flag_valid(const char* param);
 //Takes an array of strings that represent the parameters the user used when using grep. Returns 0 if invalid params are
 //given, 1 if all params are valid. The amount of params must also be passed (in similar fashion to main) so the param
 //array can be accurately iterated over.
-int validate_params(int param_count, const char** params);
+int validate_params(int paramc, const char** params);
 
-//Takes an array of strings representing arguments the user used when calling grep and parses them, setting relevant
-//global flags/variables like files and matching strings to be used in text/pattern matching later.
-int parse_args(const char** args);
+//Takes an array of strings representing arguments and flags the user passed when calling grep, and creates a new
+//grep state struct based on these args. Validates that flags contain arguments if required, and throws errors if not.
+grep_state init_state(int argc, const char** args);
 
 //Takes a string as an argument and returns the version with all lowercase, used if ignoring case when checking match.
 char* lower_line(const char* line);

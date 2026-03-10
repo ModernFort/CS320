@@ -45,9 +45,9 @@ int flag_valid(const char* param){
     return 0;
 }
 
-int validate_params(int param_count, const char** params){
+int validate_params(int paramc, const char** params){
     //Iterate over each param
-    for(int i = 0; i < param_count; i++){
+    for(int i = 0; i < paramc; i++){
         //Find the current param and look for a dash at the start indicating it is a flag.
         //If it is, check to see if the flag is valid. If it isn't return 0.
         char* curr = params[i];
@@ -63,7 +63,7 @@ int validate_params(int param_count, const char** params){
     return 1;
 }
 
-int parse_args(const char** args){
+grep_state init_state(int argc, const char** args){
 
 }
 
