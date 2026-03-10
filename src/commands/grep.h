@@ -12,7 +12,8 @@
 typedef enum {
     BASIC_REGEX,
     EXTENDED_REGEX,
-    PLAIN_TEXT
+    FIXED_STRING,
+    INVALID_MODE //If no valid mode flag, this will be set as the state struct's mode for error handling
 } match_type;
 
 //Struct that stores information about the current state of the grep command, like the type
