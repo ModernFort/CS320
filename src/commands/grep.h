@@ -7,6 +7,10 @@
 #ifndef GREP_H
 #define GREP_H
 
+//Maximum amount of patterns/files that can be passed as arguments. Arbitrary for now
+#define MAX_PATTERNS 256
+#define MAX_FILES 256
+
 //Enum ensuring types of matches remain mutually exclusive, so multiple can't be
 //selected at once.
 typedef enum {
@@ -20,12 +24,12 @@ typedef enum {
 //Defining these as structs allows for easy offloading of pattern/file parsing to helpers, since they
 //need to store and return info about multiple variables.
 typedef struct {
-    char** patterns;
+    char* patterns[MAX_PATTERNS];
     int pattern_count;
 } _pattern_info;
 
 typedef struct {
-    char** file_paths;
+    char* file_paths[MAX_FILES];
     int file_count;
 } _file_info;
 
@@ -49,12 +53,9 @@ typedef struct {
     _file_info file_info;
 
     //If max count flag is selected, this stores the maximum matches that can be counted before stopping
-    const long max_count;
+    long max_count;
 
 } grep_state;
-
-//Determine if a string is a flag by seeing if the first char is a dash. Return 1 if so, 0 if not.
-int is_flag(char* str);
 
 //Takes a flag as an argument and returns the corresponding mode enum, or INVALID_MODE if none is detected.
 match_type get_mode(char* mode_flag);
