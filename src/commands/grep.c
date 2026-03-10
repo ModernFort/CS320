@@ -36,6 +36,8 @@ static const char *VALID_FLAGS[] = {
 static const int VALID_FLAG_COUNT = 
     sizeof(VALID_FLAGS) / sizeof(VALID_FLAGS[0]);
 
+int is_flag(char* str) {return str[0] == '-';}
+
 int flag_valid(const char* param){
     //Iterate over the array of valid flags, if a match is found return 1.
     for(int i = 0; i < VALID_FLAG_COUNT; i++) {
@@ -67,7 +69,7 @@ grep_state init_state(int grep_argc, const char** args){
     //This version of grep must minimally contain a mode (regex or plain text) flag, 
     //followed by match flags (if any), followed by pattern/text, and finally 
     //files to search. The mode is required to be the first argument.
-    if(grep_argc <= 2){
+    if(grep_argc <= 2 || is_flag(args[0])){
         fprintf(stderr, "Usage: grep MODE <MATCH FLAGS> PATTERN FILE <FILE2>...\n");
         fprintf(stderr, "For multiple patterns: grep -e <MATCH FLAGS> PATTERN <PATTERN2>... FILE <FILE2>...\n");
         exit(EXIT_FAILURE);
