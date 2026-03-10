@@ -7,6 +7,10 @@
 //Maximum length a line of a file can be, equivalent to the max page size on most systems.
 #define MAX_LINE_LEN 4096
 
+//Maximum amount of patterns/files that can be passed as arguments.
+#define MAX_PATTERNS 256
+#define MAX_FILES 256
+
 //A comprehensive array of flags that my grep clone will recognize. Contains short and long
 //versions of each flag.
 static const char *VALID_FLAGS[] = {
@@ -37,6 +41,15 @@ static const int VALID_FLAG_COUNT =
     sizeof(VALID_FLAGS) / sizeof(VALID_FLAGS[0]);
 
 int is_flag(char* str) {return str[0] == '-';}
+
+match_type get_mode(char* mode_flag){
+    if(strcmp(mode_flag, "-G") == 0 || strcmp(mode_flag, "--basic-regexp") == 0) return BASIC_REGEX;
+    if(strcmp(mode_flag, "-E") == 0 || strcmp(mode_flag, "--extended-regexp") == 0) return EXTENDED_REGEX;
+    if(strcmp(mode_flag, "-F") == 0 || strcmp(mode_flag, "--fixed-strings") == 0) return FIXED_STRING;
+
+    //If none of the valid modes are detected, return INVALID_MODE so the calling process can exit/throw error
+    return INVALID_MODE;
+} 
 
 int flag_valid(const char* param){
     //Iterate over the array of valid flags, if a match is found return 1.
@@ -69,12 +82,27 @@ grep_state init_state(int grep_argc, const char** args){
     //This version of grep must minimally contain a mode (regex or plain text) flag, 
     //followed by match flags (if any), followed by pattern/text, and finally 
     //files to search. The mode is required to be the first argument.
-    if(grep_argc <= 2 || !is_flag(args[0])){
-        fprintf(stderr, "Usage: grep MODE <MATCH FLAGS> PATTERN FILE <FILE2>...\n");
-        fprintf(stderr, "For multiple patterns: grep -e <MATCH FLAGS> PATTERN <PATTERN2>... FILE <FILE2>...\n");
+    if(grep_argc < 4 || !is_flag(args[0])){
+        fprintf(stderr, "Usage: grep MODE <MATCH FLAGS> PATTERN -f FILE <FILE2>...\n");
         exit(EXIT_FAILURE);
     }
 
+    //Initialize a 0/null filled state struct, as well as arrays to store patterns/files.
+    grep_state state = {0};
+    char* patterns[MAX_PATTERNS];
+    char* files[MAX_FILES];
+
+    //Determine the mode based off of the first flag, set the match mode of the grep state.
+    char* mode_flag = args[0];
+    match_type mode = get_mode(mode_flag);
+
+    if(mode == INVALID_MODE){
+        fprintf(stderr, "Error: Please enter a valid mode\n");
+        fprintf(stderr, "Usage: grep MODE <MATCH FLAGS> PATTERN -f FILE <FILE2>...\n");
+        exit(EXIT_FAILURE);       
+    }
+
+    state.mode = mode;
 
 }
 
