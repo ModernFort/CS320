@@ -61,8 +61,8 @@ typedef struct {
 match_type get_mode(char* mode_flag);
 
 //Helpers that take the array of user arguments and return an array of patterns/files with the count of each.
-_pattern_info get_patterns(char** args);
-_file_info get_files(char** args);
+_pattern_info get_patterns(char** args, int start_idx);
+_file_info get_files(char** args, int start_idx);
 
 //Checks if an individual flag is present in the array of valid flags.
 //Returns 1 if it exists, 0 if not.
