@@ -1,19 +1,11 @@
-#define CMD_SIZE 256
-#define HIST_SIZE 50
-
+#include "history.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
 
-typedef struct {
-  int size; 
-  int head;
-  char *commands[HIST_SIZE];
-} History;
 
-
-History *initHist() {
+History *initHist(void) {
   // alloc history and sets everything to null/0
   History *h = (History*)calloc(1, sizeof(History));
   if (h == NULL) {
