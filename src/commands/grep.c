@@ -69,7 +69,23 @@ _pattern_info get_patterns(char** args, int start_idx){
 }
 
 _file_info get_files(char** args, int start_idx){
-    char* files[MAX_FILES];
+    //Initialize a new pattern info struct as well as the fields it will store.
+    _file_info info = {0};
+    int file_idx = 0;
+    int curr_idx = start_idx;
+
+    //Loop over the arguments until a flag is detected, adding each pattern to the
+    //patterns array and incrementing pattern count/the current idx.
+    while(args[curr_idx] && !flag_valid(args[curr_idx])){
+        info.file_count++;
+        //Return early if the pattern count goes above max patterns, to be checked by
+        //the calling function. This prevents overflow of the max patterns array.
+        if(info.file_count > MAX_PATTERNS) return info;
+        info.file_paths[file_idx++] = args[curr_idx++];
+        curr_idx++;
+    }
+
+    return info;
 }
 
 int flag_valid(const char* param){
