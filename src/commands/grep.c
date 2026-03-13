@@ -98,7 +98,7 @@ int flag_valid(const char* param){
     return 0;
 }
 
-int validate_params(int paramc, const char** params){
+int validate_params(int paramc, char** params){
     //Iterate over each param
     for(int i = 0; i < paramc; i++){
         //Find the current param and look for a dash at the start indicating it is a flag.
@@ -116,7 +116,7 @@ int validate_params(int paramc, const char** params){
     return 1;
 }
 
-grep_state init_state(int grep_argc, const char** args){
+grep_state init_state(int grep_argc, char** args){
     //This version of grep must minimally contain a mode (regex or plain text) flag, 
     //followed by match flags (if any), followed by pattern/text, and finally 
     //files to search. The mode is required to be the first argument.
@@ -327,3 +327,4 @@ int contains_text(char* line, const char* str_to_match){
     //is not found, in which case strstr returns NULL.
     return strstr(line, str_to_match) != NULL;
 }
+
