@@ -227,8 +227,8 @@ grep_state init_state(int grep_argc, char** args){
 
             //Convert the max_count arg to a long, if no int was entered print usage error.
             //If errno is not 0, strtol failed so throw an error there too.
-            const long max_count = strtol(count_arg, &end, DECIMAL_BASE);
-            if(max_count == count_arg){
+            long max_count = strtol(count_arg, &end, DECIMAL_BASE);
+            if(end == count_arg){
                 fprintf(stderr, "Error: Max count requires a valid integer\n");
                 fprintf(stderr, "Usage: grep MODE -m INTEGER PATTERN -f FILE\n");
                 fprintf(stderr, "Or: grep MODE --max-count= INTEGER PATTERN -f FILE\n");
