@@ -111,7 +111,6 @@ int validate_params(int paramc, char** params){
             }
         }
     }
-
     //All detected flags were valid, return success.
     return 1;
 }
@@ -327,4 +326,3 @@ int contains_text(char* line, const char* str_to_match){
     //is not found, in which case strstr returns NULL.
     return strstr(line, str_to_match) != NULL;
 }
-
