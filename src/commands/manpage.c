@@ -2,7 +2,7 @@
 #include "manpage.h"
 
 const char* defn[] = {
-    "--------------------------------\nFunction \"grep\" searches through files \n--------------------------------\n",
+    "Function \"grep\" searches through files\n",
     "touches things"
 };
 const char* cmd[] = {
@@ -32,7 +32,9 @@ int read_description(char* query) {
         printf("man command \"%s\" unknown\n", query);
         return 0;
     }
+    printf("--------------------------------------------\n");
     printf("%s", description);
+    printf("--------------------------------------------\n");
     return 0;
 }
 
@@ -43,9 +45,10 @@ void request_manpage(char* query) {
         printf("\t\n\"man [command]\"\n\n");
         printf("Where the manual will return the manual based on the \"command\" given.\n");
         printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n\n");
-        return;
+        return 1;
     }
     read_description(query);
+    return 0;
 }
 
 int remove_description(char* query){
