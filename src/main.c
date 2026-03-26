@@ -153,6 +153,9 @@ int main(int argc, char **argv) {
       }
     }
     // add your commands as else if (condition) to trigger appropriate libraries
+    if (strcmp(cmd_token, "exit") == 0) {
+      break;
+    }
   }
   exit(0);
 }
