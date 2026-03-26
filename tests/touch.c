@@ -144,7 +144,6 @@ void existing_accessible_a() {
  * @Test
  * tests the command "touch test.tmp", where tmp file
  * exists and is inaccessible
- * confirms access and modification times updated
   */
 void existing_inaccessible_no_opt() {
   FILE *fd = fopen("test.tmp", "w");
