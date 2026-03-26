@@ -3,17 +3,7 @@
 #include <string.h>
 
 
-/**
- * When called, this will check for a definition corresponding to query
- * and print the description to stdout.
- * 
- * -If the query is NULL, it will print how to use the command to stdout
- * 
- * -If the query is not found, it will print a message to stdout and return
- * 
- * @param query
- */
-void request_manpage(char* query);
+
 
 /**
  * Go into a file and grab the correct description based on the query.
@@ -39,6 +29,18 @@ int add_description(char* query, char* description);
  * @param query
  */
 int read_description(char* query);
+
+/**
+ * When called, this will check for a definition corresponding to query
+ * and print the description to stdout.
+ * 
+ * -If the query is NULL, it will print how to use the command to stdout and return 1
+ * 
+ * -If the query is not found, it will print a message to stdout and return 0
+ * 
+ * @param query
+ */
+int request_manpage(char* query);
 
 /**
  * Removes a description from the manpage
