@@ -147,13 +147,13 @@ void existing_accessible_a() {
  * confirms access and modification times updated
   */
 void existing_inaccessible_no_opt() {
-  int fd = mkstemp("test.tmp");
-  if (fd == -1) {
+  FILE *fd = fopen("test.tmp", "w");
+  if (fd == NULL) {
     // file creation failed
-    CU_FAIL("Mkstmep: Could not prepare environment for testing.");
+    CU_FAIL("Fopen: Could not prepare environment for testing.");
     return;
   } else {
-    close(fd);
+    fclose(fd);
     // file created
     struct stat file_stat;
 
@@ -288,7 +288,7 @@ int main() {
   // black box test cases
   add_test(blackBox, "Touch test.tmp", file_create_no_opt);
   add_test(blackBox, "Existing touch test.tmp -a", existing_accessible_a);
-  // add_test(blackBox, "Inaccessible touch test.tmp", existing_inaccessible_no_opt);
+  add_test(blackBox, "Inaccessible touch test.tmp", existing_inaccessible_no_opt);
   // add_test(blackBox, "Touch test.tmp -s", invalid_opt);
   // the following test, along with the blackbox tests provide statement coverage of touch()
   // add_test(whiteBox, "Touch test.tmp -am", file_create_am);
