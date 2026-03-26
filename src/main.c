@@ -73,13 +73,15 @@ int get_input(char *command_buf) {
   *
   * @returns 1 or 0 to indicate success or failure
   */
-void parse_command(char *command_buf, char *cmd_token) {
-  cmd_token = strtok(command_buf, TOKEN_DELIMS);
-  if (!cmd_token) {
+void parse_command(char *command_buf, char **cmd_token) {
+  *cmd_token = strtok(command_buf, TOKEN_DELIMS);
+  if (!(*cmd_token)) {
     // parse failed
     if (debug_mode) {
       printf("DEBUGGER: No command entered. Continuing...\n");
     }
+  } else if (debug_mode) {
+    printf("DEBUGGER: command received '%s'\n", *cmd_token);
   }
 }
 
@@ -96,8 +98,11 @@ int main(int argc, char **argv) {
     }
 
     char *cmd_token = NULL;
-    parse_command(command_buf, cmd_token);
+    parse_command(command_buf, &cmd_token);
     if (cmd_token == NULL) {
+      if (debug_mode) {
+        printf("DEBUGGER: cmd_token is null\n");
+      }
       // parse failed
       continue;
     }
