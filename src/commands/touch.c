@@ -77,11 +77,21 @@ int mod_only(char *filepath) {
   * @returns an int indicating the success (0) or failure (-1) of the method
   */
 int touch(char **params, int num_params) {
+  for (int i = 0; i < num_params - 1; i++) {
+    // validate option parameters
+    if (strcmp(params[i], "-a") != 0 &&
+        strcmp(params[i], "-m") != 0 &&
+        strcmp(params[i], "-ma") != 0 &&
+        strcmp(params[i], "-am") != 0) {
+      fprintf(stderr, "touch: invalid option -- '%s'\n", params[i]);
+      return -1;
+    }
+  }
   int result;
-  if ((result = access(params[0], F_OK)) < 0) {
+  if ((result = access(params[num_params - 1], F_OK)) < 0) {
     if (errno == ENOENT) {
       // requested file does not exist, ok to create
-      if ((result = creat(params[0], S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH)) < 0) {
+      if ((result = creat(params[num_params - 1], S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH)) < 0) {
         // file creation failed
         perror("Create");
         return result;
@@ -92,22 +102,15 @@ int touch(char **params, int num_params) {
     perror("Access");
     return result;
   }
-  for (int i = 1; i < num_params; i++) {
-    // validate option parameters
-    if (strcmp(params[i], "-a") != 0 &&
-        strcmp(params[i], "-m") != 0 &&
-        strcmp(params[i], "-ma") != 0 &&
-        strcmp(params[i], "-am") != 0) {
-      fprintf(stderr, "touch: invalid option -- '%s'\n", params[i]);
-      return -1;
-    }
-  }
-  if (contains_string(params + 1, num_params - 1, "-am") ||
-      contains_string(params + 1, num_params - 1, "-ma") ||
-      (contains_string(params + 1, num_params - 1, "-a") &&
-      contains_string(params + 1, num_params - 1, "-m"))) {
+  if (contains_string(params, num_params - 1, "-am") ||
+      contains_string(params, num_params - 1, "-ma") ||
+      (contains_string(params, num_params - 1, "-a") &&
+      contains_string(params, num_params - 1, "-m"))) {
     // option -ma, -am, or -a and -m
-    return standard(params[0]);
+    return standard(params[num_params - 1]);
+  } else if (contains_string(params, num_params - 1, "-a")) {
+    return access_only(params[num_params - 1]);
+  } else {
+    return mod_only(params[num_params - 1]);
   }
-  return 0;
 }
