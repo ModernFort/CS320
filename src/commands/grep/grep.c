@@ -27,3 +27,9 @@ int match_text(FILE* fp, const char* str_to_match){
 int match_pattern(FILE* fp, const char* pattern_to_match){
 
 }
+
+//Call the helper to initialize state from user args. The helper handles errors
+//With argument entry/parsing
+grep_state get_state(int paramc, char** params){
+    return init_state(paramc, params);
+}
