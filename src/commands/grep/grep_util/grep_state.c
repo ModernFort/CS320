@@ -7,9 +7,6 @@
 //Explicit definition of the base to be used for functions like strtol
 #define DECIMAL_BASE 10
 
-//Define a count of the valid flags array
-#define VALID_FLAG_COUNT (sizeof(VALID_FLAGS)/sizeof(VALID_FLAGS[0]))
-
 match_type get_mode(char* mode_flag){
     if(strcmp(mode_flag, "-G") == 0 || strcmp(mode_flag, "--basic-regexp") == 0) return BASIC_REGEX;
     if(strcmp(mode_flag, "-E") == 0 || strcmp(mode_flag, "--extended-regexp") == 0) return EXTENDED_REGEX;
@@ -57,16 +54,6 @@ _file_info get_files(char** args, int start_idx){
     }
 
     return info;
-}
-
-int flag_valid(const char* param){
-    if(param == NULL) return 0;
-    //Iterate over the array of valid flags, if a match is found return 1.
-    for(int i = 0; i < VALID_FLAG_COUNT; i++) {
-        if(strcmp(param, VALID_FLAGS[i]) == 0) return 1;
-    }
-    //If the entire array has been searched and no match was found, return 0.
-    return 0;
 }
 
 int validate_params(int paramc, char** params){

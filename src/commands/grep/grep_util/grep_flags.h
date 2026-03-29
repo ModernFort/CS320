@@ -1,6 +1,8 @@
 #ifndef GREP_FLAGS_H
 #define GREP_FLAGS_H
 
+//Define a count of the valid flags array
+#define VALID_FLAG_COUNT (sizeof(VALID_FLAGS)/sizeof(VALID_FLAGS[0]))
 
 //A comprehensive array of flags that my grep clone will recognize. Contains short and long
 //versions of each flag.
@@ -24,5 +26,9 @@ extern const char *VALID_FLAGS[] = {
     "-o", "--only-matching", //Print only the matching parts of a line seperate from the actual line
     "-s", "--no-messages" //Suppress error messages about unreadable/nonexistent files 
 };
+
+//Checks if an individual flag is present in the array of valid flags.
+//Returns 1 if it exists, 0 if not.
+int flag_valid(const char* param);
 
 #endif
