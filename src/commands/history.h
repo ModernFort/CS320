@@ -1,6 +1,9 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
+#define CMD_SIZE 256 // max command size that can be cached (trivial)
+#define HIST_SIZE 50 // max size of history buffer (trivial, overwrites oldest commands on overflow)
+
 /**
  * @brief Acts as data structure to store history commands
  * 
@@ -11,7 +14,7 @@
 typedef struct {
   int size;           /**< Total number of commands stored (cannot exceed max size) */
   int head;           /**< Current location of next open slot (able to wrap around buffer) */
-  char *commands[];   /**< storage of pointers to command strings (size set by macro in C file) */
+  char *commands[HIST_SIZE];   /**< storage of pointers to command strings (size set by macro in C file) */
 } History;
 
 /**
@@ -45,6 +48,14 @@ int cacheHist(History *h, char *input);
  * @return 0 on success, -1 if there was an error
  */
 int fullHist(History *h);
+
+/**
+ * @brief Displays most recent history command entered, if it exists
+ * 
+ * @param h Pointer to history struct
+ * @return 0 on success, -1 on error
+ */
+int lastHist(History *h);
 
 /**
  * @brief completely frees history object and any associated fields
