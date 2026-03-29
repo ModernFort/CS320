@@ -1,11 +1,14 @@
+#ifndef GREP_H
+#define GREP_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
 
-#ifndef GREP_H
-#define GREP_H
+#include "grep_util/grep_state.h"
+#include "grep_functions/text_matching.h"
 
 //Search a file for text and print lines that match to stdout
 int match_text(FILE* fp, const char* str_to_match);

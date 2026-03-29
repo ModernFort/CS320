@@ -1,5 +1,4 @@
 #include "grep.h"
-#include "grep_util/grep_state.h"
 
 //Maximum length a line of a file can be, equivalent to the max page size on most systems.
 #define MAX_LINE_LEN 4096
