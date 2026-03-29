@@ -61,8 +61,8 @@ typedef struct {
 match_type get_mode(char* mode_flag);
 
 //Helpers that take the array of user arguments and return an array of patterns/files with the count of each.
-_pattern_info get_patterns(char** args);
-_file_info get_files(char** args);
+_pattern_info get_patterns(char** args, int start_idx);
+_file_info get_files(char** args, int start_idx);
 
 //Checks if an individual flag is present in the array of valid flags.
 //Returns 1 if it exists, 0 if not.
@@ -71,12 +71,12 @@ int flag_valid(const char* param);
 //Takes an array of strings that represent the parameters the user used when using grep. Returns 0 if invalid params are
 //given, 1 if all params are valid. The amount of params must also be passed (in similar fashion to main) so the param
 //array can be accurately iterated over.
-int validate_params(int paramc, const char** params);
+int validate_params(int paramc, char** params);
 
 //Takes an array of strings representing arguments and flags the user passed when calling grep (not including the grep
 //command itself) and creates a new grep state struct based on these args. Validates that flags contain arguments if 
 //required, and throws errors if not.
-grep_state init_state(int grep_argc, const char** args);
+grep_state init_state(int grep_argc, char** args);
 
 //Takes a string as an argument and returns the version with all lowercase, used if ignoring case when checking match.
 char* lower_line(const char* line);

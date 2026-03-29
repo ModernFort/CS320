@@ -98,7 +98,7 @@ int flag_valid(const char* param){
     return 0;
 }
 
-int validate_params(int paramc, const char** params){
+int validate_params(int paramc, char** params){
     //Iterate over each param
     for(int i = 0; i < paramc; i++){
         //Find the current param and look for a dash at the start indicating it is a flag.
@@ -111,12 +111,11 @@ int validate_params(int paramc, const char** params){
             }
         }
     }
-
     //All detected flags were valid, return success.
     return 1;
 }
 
-grep_state init_state(int grep_argc, const char** args){
+grep_state init_state(int grep_argc, char** args){
     //This version of grep must minimally contain a mode (regex or plain text) flag, 
     //followed by match flags (if any), followed by pattern/text, and finally 
     //files to search. The mode is required to be the first argument.
@@ -227,8 +226,8 @@ grep_state init_state(int grep_argc, const char** args){
 
             //Convert the max_count arg to a long, if no int was entered print usage error.
             //If errno is not 0, strtol failed so throw an error there too.
-            const long max_count = strtol(count_arg, &end, DECIMAL_BASE);
-            if(max_count == count_arg){
+            long max_count = strtol(count_arg, &end, DECIMAL_BASE);
+            if(end == count_arg){
                 fprintf(stderr, "Error: Max count requires a valid integer\n");
                 fprintf(stderr, "Usage: grep MODE -m INTEGER PATTERN -f FILE\n");
                 fprintf(stderr, "Or: grep MODE --max-count= INTEGER PATTERN -f FILE\n");
