@@ -1,4 +1,5 @@
 #include "grep.h"
+#include "grep_util/grep_flags.h"
 
 //All uppercase ascii chars are 32 less than their lowercase equivalants, so I define this macro
 //for easy conversion.
@@ -10,34 +11,10 @@
 //Explicit definition of the base to be used for functions like strtol
 #define DECIMAL_BASE 10
 
-//A comprehensive array of flags that my grep clone will recognize. Contains short and long
-//versions of each flag.
-static const char *VALID_FLAGS[] = {
-    //Pattern matching flags
-    "-E", "--extended-regexp", //Flags to indicate extended regex matching
-    "-F", "--fixed-strings", //Indicates plain text matching
-    "-G", "--basic-regexp", //Basic regex matching
-    
-    //Matching control flags
-    "-e", "--regexp=", //Searches for multiple patterns
-    "-f", "--file=", //Matches a specific file
-    "-i", "--ignore-case", //Ignore case of pattern/input data
-    "-v", "--invert-match", //Select only non-matching lines
-
-    //Output control flags
-    "-c", "--count", //Print a count of matching lines rather than normal output
-    "-L", "--files-without-match", //Print the name of input files without matching text
-    "-l", "--files-with-matches", //Print files that do contain matching text
-    "-m", "--max-count=", //Stop reading a file after --max-count= n matching lines
-    "-o", "--only-matching", //Print only the matching parts of a line seperate from the actual line
-    "-s", "--no-messages" //Suppress error messages about unreadable/nonexistent files 
-};
-
 //Compute the length of the valid flags array one time and store as a static global.
 //Find the length by dividing the size of the array by the size of an entry to get total 
 //amount of entries.
-static const int VALID_FLAG_COUNT = 
-    sizeof(VALID_FLAGS) / sizeof(VALID_FLAGS[0]);
+#define VALID_FLAG_COUNT (sizeof(VALID_FLAGS)/sizeof(VALID_FLAGS[0]))
 
 match_type get_mode(char* mode_flag){
     if(strcmp(mode_flag, "-G") == 0 || strcmp(mode_flag, "--basic-regexp") == 0) return BASIC_REGEX;
