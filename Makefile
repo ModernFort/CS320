@@ -1,5 +1,5 @@
 CC = gcc
-CCFLAGS = -pedantic -Wall
+CCFLAGS = -pedantic -Wall -g
 EXEC = bash
 TEST_EXECS = touch_test
 LIB_DIR = src/commands
