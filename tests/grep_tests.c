@@ -8,6 +8,11 @@
     Black box unit tests:
 */
 
+//Test that contains text can reliably identify a substring present in the middle of the text
+void test_contains_middle(){
+    TEST_ASSERT_TRUE(contains_text("abc123abc", "123"));
+}
+
 //Test that contains_text can correctly detect full word substrings with spaces,
 //at the beginning and end of a string
 void test_contains_word(){
@@ -20,10 +25,20 @@ void test_no_match(){
     TEST_ASSERT_FALSE(contains_text("hello world", "bananaa"));
 }
 
+//Test that contains text is case sensitive by default
+void test_case_sensitive(){
+    TEST_ASSERT_FALSE(contains_text("Hello", "hello"));
+}
+
 //Test flag_valid to ensure it correctly recognizes known flags
 void test_flag_valid(){
     TEST_ASSERT_TRUE(flag_valid("-E"));
     TEST_ASSERT_TRUE(flag_valid("--ignore-case"));
+}
+
+//test that flag valid reliably handles a NULL argument
+void test_flag_valid_null(){
+    TEST_ASSERT_FALSE(flag_valid(NULL));
 }
 
 //Test that flag_valid rejects invalid flags
@@ -101,6 +116,7 @@ void test_match_text_detects_pattern(){
     remove("test_file1.txt");
 }
 
+//Test that match_text rejects a match that doesn't exist
 void test_match_text_rejects_pattern(){
 
     FILE* f = fopen("test_file2.txt", "w");
@@ -117,6 +133,23 @@ void test_match_text_rejects_pattern(){
     remove("test_file2.txt");
 }
 
+//Test that match_text detects multiple matches and still returns true
+void test_match_text_multiple_matches(){
+
+    FILE* f = fopen("test_file3.txt", "w");
+    fprintf(f, "dog\ncat\ndog\n");
+    fclose(f);
+
+    FILE* fp = open_file("test_file3.txt");
+
+    int result = match_text(fp, "dog");
+
+    TEST_ASSERT_TRUE(result);
+
+    fclose(fp);
+    remove("test_file3.txt");
+}
+
 
 void setUp(void){}
 void tearDown(void){}
@@ -131,6 +164,9 @@ int main(void){
     RUN_TEST(test_flag_valid);
     RUN_TEST(test_flag_valid_rejects);
     RUN_TEST(test_lower_line);
+    RUN_TEST(test_contains_middle);
+    RUN_TEST(test_case_sensitive);
+    RUN_TEST(test_flag_valid_null);
 
     //Run white box tests
     RUN_TEST(test_get_mode_basic_short);
@@ -145,6 +181,7 @@ int main(void){
     //run integration tests
     RUN_TEST(test_match_text_detects_pattern);
     RUN_TEST(test_match_text_rejects_pattern);
+    RUN_TEST(test_match_text_multiple_matches);
 
     return UNITY_END();
 }
