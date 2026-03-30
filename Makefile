@@ -2,7 +2,7 @@ CC = gcc
 CCFLAGS = -pedantic -Wall -g
 EXEC = bash
 TEST_EXECS = touch_test
-LIB_DIR = src/commands
+LIB_DIR = src/commands/*
 TEST_DIR = tests
 
 LIB_SRC = $(wildcard $(LIB_DIR)/*.c) 
