@@ -30,8 +30,8 @@ typedef struct {
 //Struct that stores the running state of grep, including a running total of matches and files with/without matches
 typedef struct {
     long total_matches;
-    char** _files_with_matches;
-    char** _files_without_matches;
+    char* _files_with_matches[MAX_FILES];
+    char* _files_without_matches[MAX_FILES];
 } running_totals;
 
 //Struct that stores information about the current state of the grep command, like the type
