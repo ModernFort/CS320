@@ -14,8 +14,10 @@
 //Search a file for an extended regex and print lines that match to stdout
 int match_pattern(FILE* fp, const char* pattern_to_match);
 
+grep_flags_state get_state(int paramc, char** params);
+
 //Match text from all files according to the state of the command
-void match_files_txt(grep_state *state);
+void match_files_txt(grep_flags_state *state);
 
 //TODO: Implement match functionality for things other than file pointers, like piped output through dynamically created files (EG through cat)
 #endif

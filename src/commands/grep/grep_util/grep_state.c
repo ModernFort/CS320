@@ -73,7 +73,7 @@ int validate_params(int paramc, char** params){
     return 1;
 }
 
-grep_state init_state(int grep_argc, char** args){
+grep_flags_state init_state(int grep_argc, char** args){
     //This version of grep must minimally contain a mode (regex or plain text) flag, 
     //followed by match flags (if any), followed by pattern/text, and finally 
     //files to search. The mode is required to be the first argument.
@@ -83,7 +83,7 @@ grep_state init_state(int grep_argc, char** args){
     }
 
     //Initialize a 0/null filled state struct, as well as arrays to store patterns/files.
-    grep_state state = {0};
+    grep_flags_state state = {0};
     char* patterns[MAX_PATTERNS];
     char* files[MAX_FILES];
 
