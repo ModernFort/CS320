@@ -21,6 +21,21 @@ char* lower_line(const char* line){
     return lowered;
 }
 
+size_t read_next_line(FILE* fp, char** line, size_t* cap){
+    //Call getline with the external pointers to get the amount of bytes read
+    //to the line buffer, returning -1 if EOF
+    size_t read = getline(line, cap, fp);
+    if(read == -1) return -1;
+
+    //Strip the newline at the end of the line and replace with null terminator
+    //to turn the line into a string
+    if(read > 0 && (*line)[read-1] == '\n' ) {
+        (*line)[read-1] = '\0';
+    }
+
+    return read;
+}
+
 //Open the desired file and error check, returning the file pointer on success.
 FILE* open_file(char* user_file){
     FILE* fp;
