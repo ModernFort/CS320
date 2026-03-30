@@ -1,4 +1,4 @@
-#include "text_matching.h"
+#include "grep_matching.h"
 
 int contains_text(char* line, const char* str_to_match){
     //Use strstr to check the line for the substring, returning 0 if the string

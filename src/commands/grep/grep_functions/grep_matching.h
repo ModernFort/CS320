@@ -1,5 +1,5 @@
-#ifndef TEXT_MATCHING_H
-#define TEXT_MATCHING_H
+#ifndef GREP_MATCHING_H
+#define GREP_MATCHING_H
 
 #include <stdio.h>
 #include <stdlib.h>
