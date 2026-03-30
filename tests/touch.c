@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>
-#include "../src/commands/touch.h"
-#include "../src/commands/ls.h"
+#include "../src/commands/touch/touch.h"
+#include "../src/commands/ls/ls.h"
 
 /**
  * helper to any file creation tests
