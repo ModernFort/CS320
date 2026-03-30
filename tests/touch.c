@@ -146,7 +146,12 @@ void existing_accessible_a() {
  * exists and is inaccessible
   */
 void existing_inaccessible_no_opt() {
-  FILE *fd = fopen("test.tmp", "w");
+  // create test directory
+  if (mkdir("test", 0744) == -1) {
+    // creation of directory failed
+    CU_FAIL("Mkdir: Could not prepare environment for testing.");
+  }
+  FILE *fd = fopen("test/test.tmp", "w");
   if (fd == NULL) {
     // file creation failed
     CU_FAIL("Fopen: Could not prepare environment for testing.");
@@ -154,25 +159,19 @@ void existing_inaccessible_no_opt() {
   } else {
     fclose(fd);
     // file created
-    struct stat file_stat;
+    // modify folder permissions to prevent execute on directory
 
-    if (stat("test.tmp", &file_stat) < 0) {
-      CU_FAIL("Stat: Could not prepare environment for testing");
-      return;
-    }
-
-    mode_t newPermissions = file_stat.st_mode & ~(S_IWUSR | S_IWGRP | S_IWOTH);
-
-    if (chmod("test.tmp", newPermissions) < 0) {
-      CU_FAIL("Stat: Could not prepare environment for testing");
+    if (chmod("test", 0444) < 0) {
+      CU_FAIL("Chmod: Could not prepare environment for testing");
       return;
     }
   }
 
-  char *opts[] = {"test.tmp"};
+  char *opts[] = {"test/test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 1), -1);
-  if (remove("test.tmp") != 0) {
-    // file removal failed
+
+  if (remove("test") != 0) {
+    // directory removal failed
     CU_FAIL("Remove: Could not cleanup environment");
   }
 }
