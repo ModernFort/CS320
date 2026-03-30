@@ -17,7 +17,7 @@ char* lower_line(const char* line){
         }
     }
     
-    free(lowered);
+    lowered[len] = '\0';
     return lowered;
 }
 
