@@ -8,7 +8,7 @@
 #include <ctype.h>
 
 #include "grep_util/grep_state.h"
-#include "grep_functions/text_matching.h"
+#include "grep_functions/grep_matching.h"
 #include "grep_util/grep_util.h"
 
 //Search a file for an extended regex and print lines that match to stdout
