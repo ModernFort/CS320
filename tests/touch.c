@@ -170,6 +170,15 @@ void existing_inaccessible_no_opt() {
   char *opts[] = {"test/test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 1), -1);
 
+  if (chmod("test", 0744) < 0) {
+    CU_FAIL("Chmod: Could not prepare environment for testing");
+    return;
+  }
+
+  if (remove("test/test.tmp") != 0) {
+    // directory removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
+  }
   if (remove("test") != 0) {
     // directory removal failed
     CU_FAIL("Remove: Could not cleanup environment");
