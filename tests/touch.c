@@ -55,7 +55,7 @@ void file_create_no_opt() {
   */
 void file_create_am() {
   file_creation_test_prep();
-  char *opts[] = {"test.tmp", "-am"};
+  char *opts[] = {"-am", "test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
   CU_ASSERT_EQUAL(access("test.tmp", F_OK), 0);
   file_creation_test_cleanup();
@@ -265,9 +265,16 @@ void touch_ls() {
   stdout = original_stdout;
   fclose(temp_file);
 
-  CU_ASSERT_EQUAL(find_string_in_file("output.tmp", "test.tmp"), 0);
+  CU_ASSERT_EQUAL(find_string_in_file("output.tmp", "test.tmp"), 1);
 
-  remove("output.tmp");
+  if (remove("test.tmp") != 0) {
+    // removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
+  }
+  if (remove("output.tmp") != 0) {
+    // removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
+  }
 }
 
 /**
@@ -296,10 +303,10 @@ int main() {
   add_test(blackBox, "Touch test.tmp", file_create_no_opt);
   add_test(blackBox, "Existing touch test.tmp -a", existing_accessible_a);
   add_test(blackBox, "Inaccessible touch test.tmp", existing_inaccessible_no_opt);
-  // add_test(blackBox, "Touch test.tmp -s", invalid_opt);
+  add_test(blackBox, "Touch test.tmp -s", invalid_opt);
   // the following test, along with the blackbox tests provide statement coverage of touch()
-  // add_test(whiteBox, "Touch test.tmp -am", file_create_am);
-  // add_test(integration, "Touch and ls", touch_ls);
+  add_test(whiteBox, "Touch test.tmp -am", file_create_am);
+  add_test(integration, "Touch and ls", touch_ls);
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();
