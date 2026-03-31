@@ -3,7 +3,7 @@
 #include <linux/limits.h>
 #include <errno.h>
 #include <string.h>
-#include "commands/touch.h"
+#include "commands/touch/touch.h"
 
 //Delimiters to use for tokenizing user input, exclusively tokenizes on whitespace.
 #define TOKEN_DELIMS " \t\n"
