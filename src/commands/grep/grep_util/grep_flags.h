@@ -1,6 +1,10 @@
 #ifndef GREP_FLAGS_H
 #define GREP_FLAGS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 //A comprehensive array of flags that my grep clone will recognize. Contains short and long
 //versions of each flag.
 extern const char *VALID_FLAGS[];

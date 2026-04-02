@@ -1,8 +1,5 @@
 #include "grep_state.h"
 #include "grep_flags.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "errno.h"
 
 //Explicit definition of the base to be used for functions like strtol
 #define DECIMAL_BASE 10
@@ -29,8 +26,8 @@ _pattern_info get_patterns(char** args, int start_idx){
         //Return early if the pattern count goes above max patterns, to be checked by
         //the calling function. This prevents overflow of the max patterns array.
         if(info.pattern_count > MAX_PATTERNS) return info;
+
         info.patterns[pattern_idx++] = args[curr_idx++];
-        curr_idx++;
     }
 
     return info;
@@ -50,7 +47,6 @@ _file_info get_files(char** args, int start_idx){
         //the calling function. This prevents overflow of the max patterns array.
         if(info.file_count > MAX_PATTERNS) return info;
         info.file_paths[file_idx++] = args[curr_idx++];
-        curr_idx++;
     }
 
     return info;

@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 //All uppercase ascii chars are 32 less than their lowercase equivalants, so I define this macro
 //for easy conversion.

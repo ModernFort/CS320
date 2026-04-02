@@ -1,6 +1,11 @@
 #ifndef GREP_STATE_H
 #define GREP_STATE_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 //Maximum amount of patterns/files that can be passed as arguments. Arbitrary for now
 #define MAX_PATTERNS 256
 #define MAX_FILES 256
