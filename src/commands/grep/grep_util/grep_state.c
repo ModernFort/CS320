@@ -219,5 +219,5 @@ grep_state init_state(int grep_argc, char** args){
         idx++;
     }
 
-
+    return state;
 }

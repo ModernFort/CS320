@@ -27,6 +27,13 @@ typedef struct {
     int file_count;
 } _file_info;
 
+//Struct that stores the running state of grep, including a running total of matches and files with/without matches
+typedef struct {
+    long total_matches;
+    char* _files_with_matches[MAX_FILES];
+    char* _files_without_matches[MAX_FILES];
+} running_totals;
+
 //Struct that stores information about the current state of the grep command, like the type
 //of match, selected flags, match count, etc.
 typedef struct {
@@ -49,6 +56,9 @@ typedef struct {
     //If max count flag is selected, this stores the maximum matches that can be counted before stopping
     long max_count;
 
+    //Reference to a struct storing the running totals as the command executes
+    running_totals totals;
+
 } grep_state;
 
 //Takes a flag as an argument and returns the corresponding mode enum, or INVALID_MODE if none is detected.
@@ -68,7 +78,7 @@ int flag_valid(const char* param);
 int validate_params(int paramc, char** params);
 
 //Takes an array of strings representing arguments and flags the user passed when calling grep (not including the grep
-//command itself) and creates a new grep state struct based on these args. Validates that flags contain arguments if 
+//command itself) and creates a new grep flags struct based on these args. Validates that flags contain arguments if 
 //required, and throws errors if not.
 grep_state init_state(int grep_argc, char** args);
 
