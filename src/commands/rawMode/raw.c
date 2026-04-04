@@ -3,11 +3,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "./../history/history.h"
 
 #define MAX_SEQ_SIZE 7
 
+
 // yes, this must be global, at least within the file
 static struct termios defaultTermios;
+
+typedef struct {
+  History *hist;
+  char cmd[CMD_SIZE];
+  int cmdCurs;
+} Context;
+
+Context *initContext(){
+  Context *c = (Context*)calloc(1, sizeof(Context));
+  c->hist = initHist();
+  c->cmdCurs = 0;
+  return c;
+}
 
 // enum of multi-character keys (easily scalable)
 typedef enum {
@@ -36,6 +51,7 @@ static KeyMap binds[] = {
 
 void exitRaw() {
   tcsetattr(STDIN_FILENO, TCSANOW, &defaultTermios);
+  printf("\x1b[0 q");
 }
 
 void enterRaw() {
@@ -65,48 +81,94 @@ void enterRaw() {
   // set stdin to the new raw files, 
   // middle flag flushes buffer before applting so keystrokes aren't lost 
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+  printf("\x1b[6 q");
 }
 
+// TODO: learn this shit more
+typedef void (*KeyHandler)(Context*);
 
-void parseEscapeKeys() {
+void handleUARR(Context *context) {
+  char *prevCmd = lastHist(context->hist);
+  if (prevCmd != NULL){
+    strcpy(context->cmd, prevCmd);
+    context->cmdCurs = strlen(context->cmd);
+    printf("\r\x1b[2K😎👉 %s", prevCmd);
+    fflush(stdout);
+  }
+}
+
+void handleDARR(Context *c) {
+    printf("\r\n[DEBUG] Moving Down in History...");
+}
+
+// TODO: wtf, learn this shit more
+KeyHandler dispatchTable[] = {
+    [KEY_UARR]    = handleUARR,
+    [KEY_DARR]  = handleDARR,
+    [KEY_LARR]  = NULL, // We can fill these in later
+    [KEY_RARR] = NULL
+};
+
+
+
+
+void parseEscapeKeys(Context *context) {
   int counter = 1;
   char seq[MAX_SEQ_SIZE+2] = {0}; // + 1 for escape char, +1 for null term
   seq[0] = '\x1b';
   
   while (counter <= MAX_SEQ_SIZE && read(STDIN_FILENO, seq + counter, 1) == 1) {
-    //char cur = seq[counter];
     counter++;
-
-    // per ANSI standard, any escape sequence will end with a char in this range. 
-    // We will save input delay exiting here instead of waiting .1 seconds to proc final input
-    //TODO: add this back if you have time/delay is noticable
-    // if (cur >= '@' && cur <= '~') break;
   }
 
-// TODO: 4 is length of 'binds' for now. We fix hard coding later
+  // TODO: 4 is length of 'binds' for now. We fix hard coding later
   for (int i = 0; i < 4; i++) {
     if(strcmp(seq, binds[i].keySeq) == 0) {
-      printf("%d", binds[i].key);
+      int action = binds[i].key;
+      if (dispatchTable[action] != NULL) dispatchTable[action](context);
       fflush(stdout);
     }
   }
 }
 
-void procInputs() {
+void procInputs(Context *context) {
   char c;
+  printf("😎👉 ");
+  fflush(stdout);
   while (1) {
 
-    
+    // read a single char from stdin
     int input = read(STDIN_FILENO, &c, 1);
     if (input == 1) {
+
+      // TODO: we'll probably want to handle backspace first so it get's procd before anything else
+
+      // quit character... TODO: Change quit input later
       if (c == 'q') break;
+
+      
       else if (c == '\n' || c == '\r') {
-        printf("\r\n");
+        // cache history command
+        cacheHist(context->hist, context->cmd);
+
+        //TODO: actually execute whatever gets called here, if possible
+        printf("\r\nRunning: %s\r\n", context->cmd);
+
+        // reset cmd buffer
+        memset(context->cmd, 0, CMD_SIZE);
+        context->cmdCurs = 0;
+
+        printf("😎👉 ");
         fflush(stdout);
       }
       
-      else if (c == '\x1b') { parseEscapeKeys(); }
+      // if you press special keys (that require escape char) proc accordingly
+      else if (c == '\x1b') { parseEscapeKeys(context); }
+
+      // otherwise, it's a normal character, so just print to stdout
       else {
+        context->cmd[context->cmdCurs] = c;
+        context->cmdCurs++;
         printf("%c", c);
         fflush(stdout);
       }
@@ -118,9 +180,11 @@ int main() {
 
   enterRaw();
 
+  Context *c = initContext();
+
   printf("Now entering raw mode. Normal terminal shortcuts may not work. Press 'q' to exit\r\n");
 
-  procInputs();
+  procInputs(c);
 
   return 0;
 }
