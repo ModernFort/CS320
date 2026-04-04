@@ -55,7 +55,7 @@ void file_create_no_opt() {
   */
 void file_create_am() {
   file_creation_test_prep();
-  char *opts[] = {"test.tmp", "-am"};
+  char *opts[] = {"-am", "test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 2), 0);
   CU_ASSERT_EQUAL(access("test.tmp", F_OK), 0);
   file_creation_test_cleanup();
@@ -146,7 +146,12 @@ void existing_accessible_a() {
  * exists and is inaccessible
   */
 void existing_inaccessible_no_opt() {
-  FILE *fd = fopen("test.tmp", "w");
+  // create test directory
+  if (mkdir("test", 0744) == -1) {
+    // creation of directory failed
+    CU_FAIL("Mkdir: Could not prepare environment for testing.");
+  }
+  FILE *fd = fopen("test/test.tmp", "w");
   if (fd == NULL) {
     // file creation failed
     CU_FAIL("Fopen: Could not prepare environment for testing.");
@@ -154,25 +159,28 @@ void existing_inaccessible_no_opt() {
   } else {
     fclose(fd);
     // file created
-    struct stat file_stat;
+    // modify folder permissions to prevent execute on directory
 
-    if (stat("test.tmp", &file_stat) < 0) {
-      CU_FAIL("Stat: Could not prepare environment for testing");
-      return;
-    }
-
-    mode_t newPermissions = file_stat.st_mode & ~(S_IWUSR | S_IWGRP | S_IWOTH);
-
-    if (chmod("test.tmp", newPermissions) < 0) {
-      CU_FAIL("Stat: Could not prepare environment for testing");
+    if (chmod("test", 0444) < 0) {
+      CU_FAIL("Chmod: Could not prepare environment for testing");
       return;
     }
   }
 
-  char *opts[] = {"test.tmp"};
+  char *opts[] = {"test/test.tmp"};
   CU_ASSERT_EQUAL(touch(opts, 1), -1);
-  if (remove("test.tmp") != 0) {
-    // file removal failed
+
+  if (chmod("test", 0744) < 0) {
+    CU_FAIL("Chmod: Could not prepare environment for testing");
+    return;
+  }
+
+  if (remove("test/test.tmp") != 0) {
+    // directory removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
+  }
+  if (remove("test") != 0) {
+    // directory removal failed
     CU_FAIL("Remove: Could not cleanup environment");
   }
 }
@@ -257,9 +265,16 @@ void touch_ls() {
   stdout = original_stdout;
   fclose(temp_file);
 
-  CU_ASSERT_EQUAL(find_string_in_file("output.tmp", "test.tmp"), 0);
+  CU_ASSERT_EQUAL(find_string_in_file("output.tmp", "test.tmp"), 1);
 
-  remove("output.tmp");
+  if (remove("test.tmp") != 0) {
+    // removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
+  }
+  if (remove("output.tmp") != 0) {
+    // removal failed
+    CU_FAIL("Remove: Could not cleanup environment");
+  }
 }
 
 /**
@@ -288,10 +303,10 @@ int main() {
   add_test(blackBox, "Touch test.tmp", file_create_no_opt);
   add_test(blackBox, "Existing touch test.tmp -a", existing_accessible_a);
   add_test(blackBox, "Inaccessible touch test.tmp", existing_inaccessible_no_opt);
-  // add_test(blackBox, "Touch test.tmp -s", invalid_opt);
+  add_test(blackBox, "Touch test.tmp -s", invalid_opt);
   // the following test, along with the blackbox tests provide statement coverage of touch()
-  // add_test(whiteBox, "Touch test.tmp -am", file_create_am);
-  // add_test(integration, "Touch and ls", touch_ls);
+  add_test(whiteBox, "Touch test.tmp -am", file_create_am);
+  add_test(integration, "Touch and ls", touch_ls);
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();
