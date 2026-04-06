@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <string.h>
 #include "commands/touch/touch.h"
+#include "commands/manpage/manpage.h"
 
 //Delimiters to use for tokenizing user input, exclusively tokenizes on whitespace.
 #define TOKEN_DELIMS " \t\n"
@@ -151,6 +152,13 @@ int main(int argc, char **argv) {
       } else {
         touch(cmd_params, paramsc);
       }
+    }
+    if (strcmp(cmd_token, "man") == 0) {
+      // if there is a value to search the manpage for
+      // request_manpage(query)
+
+      // if there isnt a prompt to search the manpage for
+      // request_manpage(NULL)
     }
     // add your commands as else if (condition) to trigger appropriate libraries
     if (strcmp(cmd_token, "exit") == 0) {
