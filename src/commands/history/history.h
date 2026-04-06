@@ -14,6 +14,7 @@
 typedef struct {
   int size;           /**< Total number of commands stored (cannot exceed max size) */
   int head;           /**< Current location of next open slot (able to wrap around buffer) */
+  int curIndex;       /**< Used for subsequent use of lastHist() commands */
   char *commands[HIST_SIZE];   /**< storage of pointers to command strings (size set by macro in C file) */
 } History;
 
@@ -53,9 +54,17 @@ int fullHist(History *h);
  * @brief Displays most recent history command entered, if it exists
  * 
  * @param h Pointer to history struct
+ * @return the previous history command
+ */
+char *lastHist(History *h);
+
+/**
+ * @brief resets curIndex pointer to 0 so the next LastHist restarts at the head
+ * 
+ * @param h Pointer to history struct
  * @return 0 on success, -1 on error
  */
-int lastHist(History *h);
+int resetCurIndex(History *h);
 
 /**
  * @brief completely frees history object and any associated fields
