@@ -34,6 +34,7 @@ int cacheHist(History *h, char *input) {
 
   // increment head and size, but account for max HIST_SIZE
   h->head = (h->head + 1) % HIST_SIZE;
+  h->curIndex = h->head;
   h->size = (h->size == HIST_SIZE) ? HIST_SIZE : h->size + 1;  
 
   return h->size;
@@ -48,15 +49,21 @@ int fullHist(History *h) {
   return 0;
 }
 
-int lastHist(History *h) {
+char *lastHist(History *h) {
   // check empty list
-  if (h->size == 0) return -1;
+  if (h->size == 0) return "";
 
   // hard code check for edge case of looping array
-  int prevIndex = (h->head == 0) ? HIST_SIZE - 1 : h->head - 1;
+  h->curIndex = (h->curIndex == 0) ? HIST_SIZE - 1 : h->curIndex - 1;
 
-  printf("%s\n", h->commands[prevIndex]);
-  
+  //printf("%s\n", h->commands[prevIndex]);
+
+  // new return to accommodate raw mode
+  return h->commands[h->curIndex];
+}
+
+int restCurIndex(History *h) {
+  h->curIndex = h->head;
   return 0;
 }
 
@@ -75,5 +82,6 @@ int clearHist(History *h) {
   }
   h->size = 0;
   h->head = 0;
+  h->curIndex = 0;
   return 0;
 }
