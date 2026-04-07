@@ -1,6 +1,11 @@
 #ifndef GREP_STATE_H
 #define GREP_STATE_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 //Maximum amount of patterns/files that can be passed as arguments. Arbitrary for now
 #define MAX_PATTERNS 256
 #define MAX_FILES 256
@@ -27,11 +32,17 @@ typedef struct {
     int file_count;
 } _file_info;
 
-//Struct that stores the running state of grep, including a running total of matches and files with/without matches
+//Struct that stores the running state of grep. What it stores varies depending on flags. If the inverted
+//match flag is set, then it will store the total amount of non-matching lines instead.
 typedef struct {
     long total_matches;
+
     char* _files_with_matches[MAX_FILES];
+    int _files_with_matches_count;
+
     char* _files_without_matches[MAX_FILES];
+    int _files_without_matches_count;
+
 } running_totals;
 
 //Struct that stores information about the current state of the grep command, like the type

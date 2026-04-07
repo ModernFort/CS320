@@ -14,5 +14,37 @@ grep_state get_state(int paramc, char** params){
 }
 
 
-void match_files_txt(grep_state *flags){
+void match_files_txt(grep_state *state){
+    //Unpack file/pattern counts and arrays
+    char** files = state->file_info.file_paths;
+    int file_count = state->file_info.file_count;
+
+    printf("File count: %d\n", file_count);
+
+    FILE* current_fp;
+
+    for(int i = 0; i < file_count; i++){
+        printf("Opening %s\n", files[i]);
+        //Open the file and match it using the helper
+        current_fp = open_file(files[i]);
+        match_file_txt(state, current_fp, files[i]);
+        fclose(current_fp);
+    }
+
+    printf("Done!\n");
+}
+
+int main(int argc, char** argv){
+    char** grep_args = argv+1;
+    grep_state state = get_state(argc-1, grep_args);
+
+    printf("State:\n");
+    printf("Mode: %d\n", state.mode);
+    printf("Strings to find:\n");
+    for(int i=0; i < state.pattern_info.pattern_count; i++){
+        printf("%s\n", state.pattern_info.patterns[i]);
+    }
+
+    match_files_txt(&state);
+    return 0;
 }
