@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <string.h>
 #include "commands/touch/touch.h"
+#include "commands/ls/ls.h"
 
 //Delimiters to use for tokenizing user input, exclusively tokenizes on whitespace.
 #define TOKEN_DELIMS " \t\n"
@@ -141,8 +142,7 @@ int main(int argc, char **argv) {
       // if(grep_result != 0){
       //   print_error(grep_result);
       // }
-      // continue;
-
+      continue;
     }
     if (strcmp(cmd_token, "touch") == 0) {
       if (paramsc == 0) {
@@ -151,11 +151,21 @@ int main(int argc, char **argv) {
       } else {
         touch(cmd_params, paramsc);
       }
+      continue;
+    }
+    if (strcmp(cmd_token, "ls") == 0) {
+      if (paramsc == 0) {
+        ls(NULL);
+      } else {
+        ls(cmd_params[0]);
+      }
+      continue;
     }
     // add your commands as else if (condition) to trigger appropriate libraries
     if (strcmp(cmd_token, "exit") == 0) {
       break;
     }
+    printf("command not found: %s\n", cmd_token);
   }
   exit(0);
 }
