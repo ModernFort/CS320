@@ -123,7 +123,7 @@ void procInputs(Context *context) {
   }
 }
 
-int main() {
+int raw_main() {
 
   enterRaw();
 
