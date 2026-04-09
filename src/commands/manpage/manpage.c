@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "manpage.h"
 
 const char* defn[] = {

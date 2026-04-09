@@ -1,12 +1,6 @@
-#define _POSIX_C_SOURCE 200809L
+#include "touch.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
+#define _POSIX_C_SOURCE 200809L
 
 /**
   * Method returns 0 or 1 to indicate whether an array of strings
