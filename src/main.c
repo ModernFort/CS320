@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <string.h>
 #include "commands/touch/touch.h"
+#include "commands/ls/ls.h"
 #include "commands/manpage/manpage.h"
 
 //Delimiters to use for tokenizing user input, exclusively tokenizes on whitespace.
@@ -142,8 +143,7 @@ int main(int argc, char **argv) {
       // if(grep_result != 0){
       //   print_error(grep_result);
       // }
-      // continue;
-
+      continue;
     }
     if (strcmp(cmd_token, "touch") == 0) {
       if (paramsc == 0) {
@@ -152,6 +152,15 @@ int main(int argc, char **argv) {
       } else {
         touch(cmd_params, paramsc);
       }
+      continue;
+    }
+    if (strcmp(cmd_token, "ls") == 0) {
+      if (paramsc == 0) {
+        ls(NULL);
+      } else {
+        ls(cmd_params[0]);
+      }
+      continue;
     }
     if (strcmp(cmd_token, "man") == 0) {
       // if there is a value to search the manpage for
@@ -164,6 +173,7 @@ int main(int argc, char **argv) {
     if (strcmp(cmd_token, "exit") == 0) {
       break;
     }
+    printf("command not found: %s\n", cmd_token);
   }
   exit(0);
 }

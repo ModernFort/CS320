@@ -1,21 +1,7 @@
-#include <termios.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "./../history/history.h"
-
-#define MAX_SEQ_SIZE 7
-
+#include "raw.h"
 
 // yes, this must be global, at least within the file
 static struct termios defaultTermios;
-
-typedef struct {
-  History *hist;
-  char cmd[CMD_SIZE];
-  int cmdCurs;
-} Context;
 
 Context *initContext(){
   Context *c = (Context*)calloc(1, sizeof(Context));
@@ -23,31 +9,6 @@ Context *initContext(){
   c->cmdCurs = 0;
   return c;
 }
-
-// enum of multi-character keys (easily scalable)
-typedef enum {
-  KEY_NORMAL,
-  KEY_UARR,
-  KEY_DARR,
-  KEY_RARR,
-  KEY_LARR
-} Keystroke;
-
-// struct to link ('string' -> keystroke)
-typedef struct {
-  const char *keySeq;
-  Keystroke key;
-} KeyMap;
-
-// list of links (easily scalable)
-static KeyMap binds[] = {
-  {"\x1b[A", KEY_UARR},
-  {"\x1b[B", KEY_DARR},
-  {"\x1b[C", KEY_RARR},
-  {"\x1b[D", KEY_LARR}
-};
-
-
 
 void exitRaw() {
   tcsetattr(STDIN_FILENO, TCSANOW, &defaultTermios);
@@ -84,9 +45,6 @@ void enterRaw() {
   printf("\x1b[6 q");
 }
 
-// TODO: learn this shit more
-typedef void (*KeyHandler)(Context*);
-
 void handleUARR(Context *context) {
   char *prevCmd = lastHist(context->hist);
   if (prevCmd != NULL){
@@ -100,17 +58,6 @@ void handleUARR(Context *context) {
 void handleDARR(Context *c) {
     printf("\r\n[DEBUG] Moving Down in History...");
 }
-
-// TODO: wtf, learn this shit more
-KeyHandler dispatchTable[] = {
-    [KEY_UARR]    = handleUARR,
-    [KEY_DARR]  = handleDARR,
-    [KEY_LARR]  = NULL, // We can fill these in later
-    [KEY_RARR] = NULL
-};
-
-
-
 
 void parseEscapeKeys(Context *context) {
   int counter = 1;
@@ -176,7 +123,7 @@ void procInputs(Context *context) {
   }
 }
 
-int main() {
+int raw_main() {
 
   enterRaw();
 

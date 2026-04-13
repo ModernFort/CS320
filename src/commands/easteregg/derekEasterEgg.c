@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include "derekEasterEgg.h"
 
 void animate() {
     char *f1 = "       \n   .   \n       ";

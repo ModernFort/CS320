@@ -1,6 +1,8 @@
 #ifndef MANPAGE_H
 #define MANPAGE_H
+
 #include <string.h>
+#include <stdio.h>
 
 
 
