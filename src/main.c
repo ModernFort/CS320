@@ -169,6 +169,9 @@ int main(int argc, char **argv) {
       // if there isnt a prompt to search the manpage for
       // request_manpage(NULL)
     }
+    if (strcmp(cmd_token, "echo") == 0) {
+      echo(cmd_params, paramsc);
+    }
     // add your commands as else if (condition) to trigger appropriate libraries
     if (strcmp(cmd_token, "exit") == 0) {
       break;
