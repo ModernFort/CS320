@@ -1,9 +1,4 @@
 #include "history.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-
 
 History *initHist(void) {
   // alloc history and sets everything to null/0

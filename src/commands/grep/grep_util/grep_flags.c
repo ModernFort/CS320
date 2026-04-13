@@ -1,5 +1,4 @@
 #include "grep_flags.h"
-#include "stdio.h"
 
  const char *VALID_FLAGS[] = {
     //Pattern matching flags

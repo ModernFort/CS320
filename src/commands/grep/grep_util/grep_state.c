@@ -1,9 +1,6 @@
 #include "grep_state.h"
 #include "grep_flags.h"
 
-//Explicit definition of the base to be used for functions like strtol
-#define DECIMAL_BASE 10
-
 match_type get_mode(char* mode_flag){
     if(strcmp(mode_flag, "-G") == 0 || strcmp(mode_flag, "--basic-regexp") == 0) return BASIC_REGEX;
     if(strcmp(mode_flag, "-E") == 0 || strcmp(mode_flag, "--extended-regexp") == 0) return EXTENDED_REGEX;

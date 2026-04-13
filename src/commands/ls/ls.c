@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
+#include "ls.h"
 
 int ls(char *path) {
   if (path == NULL) {

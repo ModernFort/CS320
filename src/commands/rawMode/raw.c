@@ -1,12 +1,4 @@
-#include <termios.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "./../history/history.h"
-
-#define MAX_SEQ_SIZE 7
-
+#include "raw.h"
 
 // yes, this must be global, at least within the file
 static struct termios defaultTermios;
@@ -27,9 +19,6 @@ Context *initContext(){
   c->live = 1;
   return c;
 }
-
-
-
 
 
 void exitRaw() {
@@ -89,6 +78,7 @@ void handleDARR(Context *context) {
     fflush(stdout);
   }
 }
+
 
 void handleRARR(Context *context) {
   if (context->cmdCurs == context->cmdSize) return;
@@ -193,7 +183,6 @@ static KeyMap binds[] = {
   {"\x1b[D", handleLARR}
 };
 
-
 void parseEscapeKeys(Context *context) {
   int counter = 1;
   char seq[MAX_SEQ_SIZE+2] = {0}; // + 1 for escape char, +1 for null term
@@ -239,7 +228,7 @@ void procInputs(Context *context) {
   }
 }
 
-int main() {
+int raw_main() {
 
   enterRaw();
 
