@@ -1,6 +1,11 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+
 #define CMD_SIZE 256 // max command size that can be cached (trivial)
 #define HIST_SIZE 50 // max size of history buffer (trivial, overwrites oldest commands on overflow)
 

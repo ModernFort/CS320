@@ -1,6 +1,15 @@
 #ifndef TOUCH_H
 #define TOUCH_H
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+
 /**
   * method implements basic functionality of bash command 'touch'
   * Supported options are -a, -m, and any combination of the two
