@@ -23,7 +23,10 @@ int cacheHist(History *h, char *input) {
   strcpy(temp, input);
 
   // account for overwriting old commands
-  if (h->commands[h->head] != NULL) free(h->commands[h->head]);
+  if (h->commands[h->head] != NULL) {
+    free(h->commands[h->head]);
+    h->tail = (h->tail + 1) % HIST_SIZE;
+  }
 
   h->commands[h->head] = temp; 
 
@@ -36,7 +39,7 @@ int cacheHist(History *h, char *input) {
 } 
 
 int fullHist(History *h) {
-  int start = (h->size < HIST_SIZE) ? 0 : h->head;
+  int start = h->tail;
 
   for (int i = start; i < (start + h->size); i++) {
     printf("%s\n", h->commands[i % HIST_SIZE]);
@@ -46,14 +49,31 @@ int fullHist(History *h) {
 
 char *lastHist(History *h) {
   // check empty list
-  if (h->size == 0) return "";
+  if (h->size == 0) return NULL;
+
+  // so we don't keep going in circle if we reach end
+  if (h->curIndex == h->tail) return h->commands[h->curIndex];
 
   // hard code check for edge case of looping array
   h->curIndex = (h->curIndex == 0) ? HIST_SIZE - 1 : h->curIndex - 1;
-
-  //printf("%s\n", h->commands[prevIndex]);
-
+  
   // new return to accommodate raw mode
+  return h->commands[h->curIndex];
+}
+
+// like inverse of lastHist... goes forward instead
+char *nextHist(History *h) {
+  if (h->size == 0) return NULL;
+
+  // check to see if we are at head (for when not at full capacity)
+  if (h->curIndex == h->head) return "";
+
+  // get next cmd
+  h->curIndex = h->curIndex == HIST_SIZE - 1 ? 0 : h->curIndex + 1;
+
+  // check again to see if we are at head (for when we have started looping)
+  if (h->curIndex == h->head) return "";
+
   return h->commands[h->curIndex];
 }
 
@@ -77,6 +97,7 @@ int clearHist(History *h) {
   }
   h->size = 0;
   h->head = 0;
+  h->tail = 0;
   h->curIndex = 0;
   return 0;
 }
