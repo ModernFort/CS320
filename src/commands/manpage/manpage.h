@@ -8,21 +8,21 @@
 
 
 /**
- * Go into a file and grab the correct description based on the query.
+ * Searches and returns the correct description based on the query.
  * 
  * @param query
  */
-const char* get_description(char* query);
+FILE* get_manpage_file(char* query);
 
 /** 
- * Adds a description into the manpage
+ * Adds a description into the manpage file
  * 
  * -Not implemented
  * 
  * @param query
  * @param description
  */
-int add_description(char* query, char* description);
+int create_new_description(char* query, char* description);
 
 /**
  * Finds the manpage, and pulls the description from the manpage out 
@@ -30,10 +30,10 @@ int add_description(char* query, char* description);
  * 
  * @param query
  */
-int read_description(char* query);
+int print_description(char* query);
 
 /**
- * When called, this will check for a definition corresponding to query
+ * Function for main, which will check for a definition corresponding to query
  * and print the description to stdout.
  * 
  * -If the query is NULL, it will print how to use the command to stdout and return 1
@@ -50,7 +50,7 @@ int request_manpage(char* query);
  * -Not implemented
  * @param query
  */
-int remove_description(char* query);
+int delete_description(char* query);
 
 /**
  * As I am currently unsure how to implement opening the gui, this will be in its place

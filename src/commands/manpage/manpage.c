@@ -11,29 +11,46 @@ const char* cmd[] = {
 
 
 
-const char* get_description(char* query){
+FILE* get_manpage_file(char* query){
+    /*
     for (int i = 0; i < (sizeof(cmd) / sizeof(cmd[0])); i++) {
         if (strncmp(query, cmd[i], strlen(cmd[i])) == 0) {
             return defn[i];
         }
     }
-    return NULL;
+        */
+    char fileloc[strlen(query)+strlen("descriptions/")+1];
+    strcpy(fileloc, "descriptions/");
+    strcat(fileloc, query);
+
+    return fopen(fileloc, "r");
 }
 
-int add_description(char* query, char* description){
+int create_new_description(char* query, char* description){
     return 0;
 }
 
 
-int read_description(char* query) {
-    const char* description = get_description(query);
+int print_description(char* query) {
+
+    // Obtaining the file
+    FILE* description = get_manpage_file(query);
     if (!description) {
         printf("man command \"%s\" unknown\n", query);
         return 0;
     }
+
+    // Printing the file out
+    int bufSize = 200;
+    char buffer[bufSize];
     printf("--------------------------------------------\n");
-    printf("%s", description);
-    printf("--------------------------------------------\n");
+    while (fgets(buffer, bufSize-1, description)) {
+        printf("%s", buffer);
+    }
+    printf("\n--------------------------------------------\n");
+
+    // Leaving
+    fclose(description);
     return 0;
 }
 
@@ -46,11 +63,11 @@ int request_manpage(char* query) {
         printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n\n");
         return 1;
     }
-    read_description(query);
+    print_description(query);
     return 0;
 }
 
-int remove_description(char* query){
+int delete_description(char* query){
     return 0;
 }
 
