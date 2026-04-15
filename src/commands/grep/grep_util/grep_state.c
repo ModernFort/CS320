@@ -15,17 +15,17 @@ _pattern_info get_patterns(char** args, int start_idx){
     _pattern_info info = {0};
     int pattern_idx = 0;
     int curr_idx = start_idx;
+    
+        //Loop over the arguments until a flag is detected, adding each pattern to the
+        //patterns array and incrementing pattern count/the current idx.
+        while(args[curr_idx] && !flag_valid(args[curr_idx])){
+            info.pattern_count++;
+            //Return early if the pattern count goes above max patterns, to be checked by
+            //the calling function. This prevents overflow of the max patterns array.
+            if(info.pattern_count > MAX_PATTERNS) return info;
 
-    //Loop over the arguments until a flag is detected, adding each pattern to the
-    //patterns array and incrementing pattern count/the current idx.
-    while(args[curr_idx] && !flag_valid(args[curr_idx])){
-        info.pattern_count++;
-        //Return early if the pattern count goes above max patterns, to be checked by
-        //the calling function. This prevents overflow of the max patterns array.
-        if(info.pattern_count > MAX_PATTERNS) return info;
-
-        info.patterns[pattern_idx++] = args[curr_idx++];
-    }
+            info.patterns[pattern_idx++] = args[curr_idx++];
+        }
 
     return info;
 }
@@ -67,6 +67,11 @@ int validate_params(int paramc, char** params){
 }
 
 grep_state init_state(int grep_argc, char** args){
+
+    //Flag indicating whether the user has used the -e flag, otherwise they have
+    //Only specified a single pattern
+    int multiple_patterns = 0;
+
     //This version of grep must minimally contain a mode (regex or plain text) flag, 
     //followed by match flags (if any), followed by pattern/text, and finally 
     //files to search. The mode is required to be the first argument.
@@ -93,11 +98,14 @@ grep_state init_state(int grep_argc, char** args){
 
     int idx = 1;
 
-    //Loop over the array until no flags remain
-    while(flag_valid(args[idx])){
+    //Loop over the array until no params remain
+    for(int i = 0; i < grep_argc; i++){
         char* flag = args[idx];
         //Multiple pattern flag is indicated, flip the boolean flag
         if((strcmp(flag, "-e") == 0 || strcmp(flag, "--regexp=") == 0)){
+
+            multiple_patterns = 1;
+
             //Call the helper to get the pattern info (patterns and pattern count)
             _pattern_info info = get_patterns(args, idx + 1);
             //If the count is greater than max patterns, no patterns were detected, or the terminating -f flag isn't the next flag,
@@ -207,6 +215,39 @@ grep_state init_state(int grep_argc, char** args){
 
         if((strcmp(flag, "-s") == 0 || strcmp(flag, "--no-messages") == 0)){
             state.suppress_errs = 1;
+        }
+
+        //If a pattern is detected, it must be followed by the file flag, files, and then terminate.
+        //If an invalid flag is detected, and it is followed by the file flag, it is treated as a single
+        //pattern and the state is returned early.
+        if(!flag_valid){
+            //If the user input a pattern (anything that is not a valid flag), and did not follow
+            //it with the file flag throw usage error and exit
+            if((!strcmp(args[i + 1], "-f") == 0 && !strcmp(args[i + 1], "--file=") == 0))
+            {
+                fprintf(stderr, "Error: File flag (-f or --file=) must immediately follow single pattern!\n");
+                fprintf(stderr, "Usage: grep MODE <FLAGS> PATTERN -f FILES\n");
+                exit(EXIT_FAILURE);
+            }
+            //Get the single pattern using the helper with the current index, it will work the same to get one pattern
+            //as multiple due to parsing constraints
+            _pattern_info pattern = get_patterns(args, idx);
+            state.pattern_info = pattern;
+            //Then get the file(s) and return the state
+            _file_info info = get_files(args, idx + 1);
+            if(info.file_count > MAX_FILES){
+                fprintf(stderr, "Error: A maximum of 256 files are allowed\n");
+                exit(EXIT_FAILURE);
+            }
+
+            if(info.file_count == 0){
+                fprintf(stderr, "Usage: grep MODE <FLAGS> -e PATTERNS -f FILES\n");
+                fprintf(stderr, "Error: the -f flag must be followed by at least one file!\n");
+                exit(EXIT_FAILURE);
+            }
+
+            state.file_info = info;
+            return state;
         }
 
         idx++;
