@@ -14,45 +14,48 @@ typedef struct {
   History *hist;
   char cmd[CMD_SIZE];
   int cmdCurs;
+  int cmdSize;
+  int live;
 } Context;
 
-// enum of multi-character keys (easily scalable)
-typedef enum {
-  KEY_NORMAL,
-  KEY_UARR,
-  KEY_DARR,
-  KEY_RARR,
-  KEY_LARR
-} Keystroke;
-
-// struct to link ('string' -> keystroke)
-typedef struct {
-  const char *keySeq;
-  Keystroke key;
-} KeyMap;
-
-// list of links (easily scalable)
-static KeyMap binds[] = {
-  {"\x1b[A", KEY_UARR},
-  {"\x1b[B", KEY_DARR},
-  {"\x1b[C", KEY_RARR},
-  {"\x1b[D", KEY_LARR}
-};
 
 // TODO: learn this shit more
 typedef void (*KeyHandler)(Context*);
 
 void handleUARR(Context *context);
 
-void handleDARR(Context *c);
+void handleDARR(Context *context);
 
-// TODO: wtf, learn this shit more
-KeyHandler dispatchTable[] = {
-    [KEY_UARR]    = handleUARR,
-    [KEY_DARR]  = handleDARR,
-    [KEY_LARR]  = NULL, // We can fill these in later
-    [KEY_RARR] = NULL
+void handleLARR(Context *context);
+
+void handleRARR(Context *context);
+
+void handleCHAR(Context *context, char c);
+
+void handleBACK(Context *context);
+
+void handleENTR(Context *context);
+
+
+
+// DIY special tuple
+// struct to link (input sequence -> action to do)
+typedef struct {
+  const char *keySeq;
+  void (*handler)(Context*);
+} KeyMap;
+
+
+// list of links (easily scalable)
+static KeyMap binds[] = {
+  {"\x1b[A", handleUARR},
+  {"\x1b[B", handleDARR},
+  {"\x1b[C", handleRARR},
+  {"\x1b[D", handleLARR}
 };
+
+
+
 
 Context *initContext();
 

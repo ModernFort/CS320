@@ -3,13 +3,7 @@
 // yes, this must be global, at least within the file
 static struct termios defaultTermios;
 
-typedef struct {
-  History *hist;
-  char cmd[CMD_SIZE];
-  int cmdCurs;
-  int cmdSize;
-  int live;
-} Context;
+
 
 Context *initContext(){
   Context *c = (Context*)calloc(1, sizeof(Context));
@@ -78,7 +72,6 @@ void handleDARR(Context *context) {
     fflush(stdout);
   }
 }
-
 
 void handleRARR(Context *context) {
   if (context->cmdCurs == context->cmdSize) return;
@@ -168,20 +161,8 @@ void handleENTR(Context *context) {
   fflush(stdout);
 }
 
-// DIY special tuple
-// struct to link (input sequence -> action to do)
-typedef struct {
-  const char *keySeq;
-  void (*handler)(Context*);
-} KeyMap;
 
-// list of links (easily scalable)
-static KeyMap binds[] = {
-  {"\x1b[A", handleUARR},
-  {"\x1b[B", handleDARR},
-  {"\x1b[C", handleRARR},
-  {"\x1b[D", handleLARR}
-};
+
 
 void parseEscapeKeys(Context *context) {
   int counter = 1;
