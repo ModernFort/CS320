@@ -6,6 +6,7 @@
 #include "commands/touch/touch.h"
 #include "commands/ls/ls.h"
 #include "commands/manpage/manpage.h"
+#include "commands/grep/grep.h"
 
 //Delimiters to use for tokenizing user input, exclusively tokenizes on whitespace.
 #define TOKEN_DELIMS " \t\n"
@@ -136,15 +137,10 @@ int main(int argc, char **argv) {
     
     printf("params: %d\n", paramsc);
     if (strcmp(cmd_token, "grep") == 0) {
-      //Call grep and pass params to process the command, validate input within grep and continue if grep returns an error. Print the error in main.
-      //Some pseudocode as an example:
-      
-      // int grep_result = grep(params);
-      // if(grep_result != 0){
-      //   print_error(grep_result);
-      // }
+      int run_grep = grep_main(paramsc, cmd_params);
       continue;
     }
+
     if (strcmp(cmd_token, "touch") == 0) {
       if (paramsc == 0) {
         // no path provided
