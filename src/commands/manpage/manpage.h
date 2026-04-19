@@ -52,11 +52,6 @@ int request_manpage(char* query);
  */
 int delete_description(char* query);
 
-/**
- * As I am currently unsure how to implement opening the gui, this will be in its place
- * -Not implemented
- */
-int open_man_gui();
 
 
 #endif

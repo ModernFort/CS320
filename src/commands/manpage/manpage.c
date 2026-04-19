@@ -1,24 +1,6 @@
 #include "manpage.h"
 
-const char* defn[] = {
-    "Function \"grep\" searches through files\n",
-    "touches things"
-};
-const char* cmd[] = {
-    "grep",
-    "touch"
-};
-
-
-
 FILE* get_manpage_file(char* query){
-    /*
-    for (int i = 0; i < (sizeof(cmd) / sizeof(cmd[0])); i++) {
-        if (strncmp(query, cmd[i], strlen(cmd[i])) == 0) {
-            return defn[i];
-        }
-    }
-        */
     char fileloc[strlen(query)+strlen("descriptions/")+1];
     strcpy(fileloc, "descriptions/");
     strcat(fileloc, query);
@@ -70,6 +52,3 @@ int request_manpage(char* query) {
 int delete_description(char* query){
     return 0;
 }
-
-// As I am currently unsure how to implement opening the gui, this will be in its place
-//int open_man_gui();
