@@ -99,8 +99,9 @@ grep_state init_state(int grep_argc, char** args){
     int idx = 1;
 
     //Loop over the array until no params remain
-    for(int i = 0; i < grep_argc; i++){
+    while(idx < grep_argc){
         char* flag = args[idx];
+        printf("%s\n", flag);
         //Multiple pattern flag is indicated, flip the boolean flag
         if((strcmp(flag, "-e") == 0 || strcmp(flag, "--regexp=") == 0)){
 
@@ -121,34 +122,37 @@ grep_state init_state(int grep_argc, char** args){
                 exit(EXIT_FAILURE);
             }
             //Update pattern info and add the pattern count to the idx to update the array pointer to point
-            //to the next flag, past the patterns.
+            //to the file flag, 1 past the patterns.
             state.pattern_info = info;
             idx += 1 + state.pattern_info.pattern_count;
 
+            //Validate the file flag immediately follows the patterns
             if((args[idx] == NULL) || (strcmp(args[idx], "-f") != 0)){
                 fprintf(stderr, "Usage: grep MODE <FLAGS> -e PATTERNS -f FILES\n");
                 fprintf(stderr, "Error: Pattern arguments must be terminated by file (-f or --file=) flag!\n");
                 exit(EXIT_FAILURE);
             }
+            
+            //Move to the first file
+            idx++;
 
-            continue;
-        }
-
-        //File flag detected, call the helper and add the struct to the state, very similarly to the patterns struct
-        if((strcmp(flag, "-f") == 0 || strcmp(flag, "--file=") == 0)){
-            _file_info info = get_files(args, idx + 1);
-            if(info.file_count > MAX_FILES){
+            //Advance the index and get the files, validating that they are less than the max and adding them
+            //to the state struct
+            _file_info f_info = get_files(args, idx);
+            if(f_info.file_count > MAX_FILES){
                 fprintf(stderr, "Error: A maximum of 256 files are allowed\n");
                 exit(EXIT_FAILURE);
             }
 
-            if(info.file_count == 0){
+            if(f_info.file_count == 0){
                 fprintf(stderr, "Usage: grep MODE <FLAGS> -e PATTERNS -f FILES\n");
                 fprintf(stderr, "Error: the -f flag must be followed by at least one file!\n");
                 exit(EXIT_FAILURE);
             }
 
-            state.file_info = info;
+            state.file_info = f_info;
+
+            continue;
         }
 
         //Match/output control flags are handled here, each flag is checked for
@@ -220,10 +224,10 @@ grep_state init_state(int grep_argc, char** args){
         //If a pattern is detected, it must be followed by the file flag, files, and then terminate.
         //If an invalid flag is detected, and it is followed by the file flag, it is treated as a single
         //pattern and the state is returned early.
-        if(!flag_valid){
+        if(!flag_valid(flag)){
             //If the user input a pattern (anything that is not a valid flag), and did not follow
             //it with the file flag throw usage error and exit
-            if((!strcmp(args[i + 1], "-f") == 0 && !strcmp(args[i + 1], "--file=") == 0))
+            if(strcmp(args[idx + 1], "-f") != 0 && strcmp(args[idx + 1], "--file=") != 0)
             {
                 fprintf(stderr, "Error: File flag (-f or --file=) must immediately follow single pattern!\n");
                 fprintf(stderr, "Usage: grep MODE <FLAGS> PATTERN -f FILES\n");
@@ -234,7 +238,7 @@ grep_state init_state(int grep_argc, char** args){
             _pattern_info pattern = get_patterns(args, idx);
             state.pattern_info = pattern;
             //Then get the file(s) and return the state
-            _file_info info = get_files(args, idx + 1);
+            _file_info info = get_files(args, idx);
             if(info.file_count > MAX_FILES){
                 fprintf(stderr, "Error: A maximum of 256 files are allowed\n");
                 exit(EXIT_FAILURE);
