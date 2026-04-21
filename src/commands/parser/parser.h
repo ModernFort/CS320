@@ -11,6 +11,7 @@
 #include "../manpage/manpage.h"
 #include "../echo/echo.h"
 #include "../rawMode/raw.h"
+#include "../grep/grep.h"
 
 //Delimiters to use for tokenizing user input, exclusively tokenizes on whitespace.
 #define TOKEN_DELIMS " \t\n"
@@ -60,5 +61,7 @@ void parse_command(char *command_buf, char **cmd_token);
   * @param c context of terminal 
   */
 void parser_main(Context *c);
+
+int grep_main(int argc, char** argv);
 
 #endif
