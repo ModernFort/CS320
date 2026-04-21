@@ -1,19 +1,9 @@
 #include "raw.h"
+#include "../parser/parser.h"
+#include "../history/history.h"
 
 // yes, this must be global, at least within the file
 static struct termios defaultTermios;
-
-
-
-Context *initContext(){
-  Context *c = (Context*)calloc(1, sizeof(Context));
-  c->hist = initHist();
-  c->cmdCurs = 0;
-  c->cmdSize = 0;
-  c->live = 1;
-  return c;
-}
-
 
 void exitRaw() {
   tcsetattr(STDIN_FILENO, TCSANOW, &defaultTermios);
@@ -51,9 +41,34 @@ void enterRaw() {
 }
 
 
+
+Context *initContext(){
+  Context *c = (Context*)calloc(1, sizeof(Context));
+  c->hist = initHist();
+  c->cmdCurs = 0;
+  c->cmdSize = 0;
+  c->live = 1;
+  return c;
+}
+
+void freeContext(Context *context) {
+  freeHist(context->hist);
+  free(context);
+}
+
+
+// list of links (easily scalable)
+static KeyMap binds[] = {
+  {"\x1b[A", handleUARR},
+  {"\x1b[B", handleDARR},
+  {"\x1b[C", handleRARR},
+  {"\x1b[D", handleLARR}
+};
+
 void handleUARR(Context *context) {
   char *prevCmd = lastHist(context->hist);
   if (prevCmd != NULL){
+    memset(context->cmd, 0, CMD_SIZE);
     strcpy(context->cmd, prevCmd);
     context->cmdCurs = strlen(context->cmd);
     context->cmdSize = strlen(context->cmd);
@@ -65,6 +80,7 @@ void handleUARR(Context *context) {
 void handleDARR(Context *context) {
   char *nextCmd = nextHist(context->hist);
   if (nextCmd != NULL) {
+    memset(context->cmd, 0, CMD_SIZE);
     strcpy(context->cmd, nextCmd);
     context->cmdCurs = strlen(context->cmd);
     context->cmdSize = strlen(context->cmd);
@@ -144,20 +160,20 @@ void handleENTR(Context *context) {
     printf("\nbye👋\n");
     fflush(stdout);
     context->live = 0;
+    freeContext(context);
     return;
   }
 
   // otherwise, we good
   cacheHist(context->hist, context->cmd);
-
-  //TODO: actually execute whatever gets called here, if possible
-  //printf("\r\nRunning: %s\r\n", context->cmd);
+  parser_main(context);
+  
 
   // reset cmd buffer
   memset(context->cmd, 0, CMD_SIZE);
   context->cmdCurs = 0;
   context->cmdSize = 0;
-  printf("\n\r😎👉 ");
+  printf("\r😎👉 ");
   fflush(stdout);
 }
 
@@ -189,7 +205,6 @@ void procInputs(Context *context) {
   printf("😎👉 ");
   fflush(stdout);
   while (context->live) {
-
     // read a single char from stdin
     int input = read(STDIN_FILENO, &c, 1);
     if (input == 1) {
@@ -209,15 +224,15 @@ void procInputs(Context *context) {
   }
 }
 
-int raw_main() {
+// int main() {
 
-  enterRaw();
+//   enterRaw();
 
-  Context *c = initContext();
+//   Context *c = initContext();
 
-  printf("Now entering custom terminal. Normal terminal shortcuts may not work. enter ':q' to exit\r\n");
+//   printf("Now entering custom terminal. Normal terminal shortcuts may not work. enter ':q' to exit\r\n");
 
-  procInputs(c);
+//   procInputs(c);
 
-  return 0;
-}
+//   return 0;
+// }

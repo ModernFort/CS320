@@ -97,5 +97,26 @@ int freeHist(History *h);
  */
 int clearHist(History *h);
 
+/**
+ * @brief prints last x commands that have been entered
+ * 
+ * @param h Pointer to the History struct
+ * @param num number of commands to print
+ * @return 0 on success, -1 on error
+ */
+int lastXHist(History *h, int num);
+
+
+/**
+ * @brief matches format of parser method to take in args and proc accordingly
+ * 
+ * @param cmdParams list of arguments following history
+ * @param paramsCount size of list
+ * @param h Pointer to the History struct
+ * @param num number of commands to 
+ * 
+ */
+void history(char **cmdParams, int paramsCount, History *h);
+
 
 #endif

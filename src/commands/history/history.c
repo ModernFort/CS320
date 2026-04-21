@@ -77,7 +77,7 @@ char *nextHist(History *h) {
   return h->commands[h->curIndex];
 }
 
-int restCurIndex(History *h) {
+int resetCurIndex(History *h) {
   h->curIndex = h->head;
   return 0;
 }
@@ -100,4 +100,25 @@ int clearHist(History *h) {
   h->tail = 0;
   h->curIndex = 0;
   return 0;
+}
+
+int lastXHist(History *h, int num) {
+  int safeNum = num > h->size ? h->size : num;
+  int start = (h->head - safeNum + HIST_SIZE) % HIST_SIZE;
+  for (int i = 0; i < safeNum; i++) {
+    printf("%s\n", h->commands[(start + i) % HIST_SIZE]);
+  }
+  return 0;
+}
+
+void history(char **params, int paramsCount, History *h) {
+  if (paramsCount == 0) fullHist(h);
+  else if (strcmp(params[0], "-c") == 0) clearHist(h);
+  else {
+    char *endPtr;
+    long num = strtol(params[0], &endPtr, 10);
+    if (*endPtr != '\0') printf("bad input\n");
+    else lastXHist(h, num);
+  }
+
 }
