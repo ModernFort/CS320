@@ -89,13 +89,7 @@ void parser_main(Context *context) {
   //printf("params: %d\n", paramsc);
   printf("\n");
   if (strcmp(cmd_token, "grep") == 0) {
-    //Call grep and pass params to process the command, validate input within grep and continue if grep returns an error. Print the error in main.
-    //Some pseudocode as an example:
-    
-    // int grep_result = grep(params);
-    // if(grep_result != 0){
-    //   print_error(grep_result);
-    // }
+    int run_grep = grep_main(paramsc, cmd_params);
     return;
   }
   if (strcmp(cmd_token, "touch") == 0) {

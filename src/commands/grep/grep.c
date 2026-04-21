@@ -35,8 +35,8 @@ void match_files_txt(grep_state *state){
 }
 
 int grep_main(int argc, char** argv){
-    char** grep_args = argv+1;
-    grep_state state = get_state(argc-1, grep_args);
+    char** grep_args = argv;
+    grep_state state = get_state(argc, grep_args);
 
     printf("State:\n");
     printf("Mode: %d\n", state.mode);
