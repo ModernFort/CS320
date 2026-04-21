@@ -15,7 +15,7 @@
 FILE* get_manpage_file(char* query);
 
 /** 
- * Adds a description into the manpage file
+ * Adds a description into the manpage file if it doesn't exist
  * 
  * -Not implemented
  * 
@@ -44,19 +44,16 @@ int print_description(char* query);
  */
 int request_manpage(char* query);
 
-/**
- * Removes a description from the manpage
+
+
+/** UNFINISHED
+ * Moves a description into the deleted folder
  * 
  * -Not implemented
  * @param query
- */
+ *
 int delete_description(char* query);
-
-/**
- * As I am currently unsure how to implement opening the gui, this will be in its place
- * -Not implemented
- */
-int open_man_gui();
+*/
 
 
 #endif
