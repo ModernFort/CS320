@@ -1,9 +1,8 @@
 #include "manpage.h"
-#include <errno.h>
 
 FILE* get_manpage_file(char* query){
-    char fileloc[strlen(query)+strlen("descriptions/")+1];
-    strcpy(fileloc, "descriptions/");
+    char fileloc[strlen(query)+strlen(loc)+1];
+    strcpy(fileloc, loc);
     strcat(fileloc, query);
 
     return fopen(fileloc, "r");
@@ -13,8 +12,8 @@ int create_new_description(char* query, char* description){
     FILE* existing_file = get_manpage_file(query);
     if (existing_file) return -1;
     
-    char new_file[strlen(query)+strlen("descriptions/")+1];
-    strcpy(new_file, "descriptions/");
+    char new_file[strlen(query)+strlen(loc)+1];
+    strcpy(new_file, loc);
     strcat(new_file, query);
     FILE* fileloc = fopen(new_file, "w");
     fwrite(description, sizeof(char), strlen(description), fileloc);
@@ -28,8 +27,8 @@ int print_description(char* query) {
     // Obtaining the file
     FILE* description = get_manpage_file(query);
     if (!description) {
-        printf("man command \"%s\" unknown\n", query);
-        return 0;
+        printf("man command \"%s\" could not be retrieved (%s)\n", query, strerror(errno));
+        return -1;
     }
 
     // Printing the file out
@@ -49,10 +48,10 @@ int print_description(char* query) {
 int request_manpage(char* query) {
     // For when there was no query present, it will print how to use the function
     if (!query || strlen(query) == 0) {
-        printf("\nHow to use the man function:\n");
+        printf("How to use the man function:\n");
         printf("\t\n\"man [command]\"\n\n");
         printf("Where the manual will return the manual based on the \"command\" given.\n");
-        printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n\n");
+        printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n");
         return 1;
     }
     print_description(query);
