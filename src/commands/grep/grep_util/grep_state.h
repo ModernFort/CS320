@@ -9,7 +9,6 @@
 //Maximum amount of patterns/files that can be passed as arguments. Arbitrary for now
 #define MAX_PATTERNS 256
 #define MAX_FILES 256
-//Explicit definition of the base to be used for functions like strtol
 #define DECIMAL_BASE 10
 
 //Enum ensuring types of matches remain mutually exclusive, so multiple can't be
