@@ -3,8 +3,9 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 
-
+#define loc "src/commands/manpage/descriptions/"
 
 
 /**

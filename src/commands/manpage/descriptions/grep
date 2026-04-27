@@ -1,1 +1,12 @@
-description for grep
+Manual for grep
+
+From linux manual page:
+grep searches for patterns in each FILE. In the synopsis's first
+form, the first operand PATTERNS is one or more patterns separated 
+by newline characters, and grep prints each line that matches a pattern.
+Typically PATTERNS should be quoted when grep is used in a shell
+command.
+
+A FILE of “-” stands for standard input.  If no FILE is given,
+recursive searches examine the working directory, and nonrecursive
+searches read standard input.

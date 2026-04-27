@@ -111,9 +111,10 @@ void parser_main(Context *context) {
   }
   if (strcmp(cmd_token, "man") == 0) {
     // if there is a value to search the manpage for
-    // request_manpage(query)
+    if (paramsc > 0) request_manpage(cmd_params[0]);
     // if there isnt a prompt to search the manpage for
-    // request_manpage(NULL)
+    else request_manpage(NULL);
+    return;
   }
   if (strcmp(cmd_token, "echo") == 0) {
     echo(cmd_params, paramsc);
