@@ -51,7 +51,7 @@ int request_manpage(char* query) {
         printf("--------------------------------------------\n");
         printf("How to use the man function:\n");
         printf("\t\"man [command]\"\n");
-        printf("Where the manual will return the manual based on the \"command\" given.\n");
+        printf("Where the manual will return the description of the \"command\" given.\n");
         printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n");
         printf("--------------------------------------------\n");
         return 1;
