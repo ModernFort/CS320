@@ -42,7 +42,7 @@ FILE* open_file(char* user_file){
     fp = fopen(user_file, "r");
     if(fp == NULL){
         fprintf(stderr, "Could not open file: %s\n", user_file);
-        exit(EXIT_FAILURE);
+        return;
     }
 
     return fp;
