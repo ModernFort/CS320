@@ -30,12 +30,12 @@ void match_file_txt(grep_state* state, FILE* fp, char* path){
         //If count only or path printing of files with/without matches are not selected, print
         //the line and continue.
         if(is_printable(state)) {
-            printf("%s", line);
+            printf("%s\n", line);
             continue;
         }
 
         //If max count is selected and has been reached, print and exit
-        if(file_matching == state->max_count){
+        if(file_matching == state->max_count){ 
             printf("Max count of matches for file %s reached\n", path);
             printf("Maximum allowed matches: %ld\n", state->max_count);
             free(line);
