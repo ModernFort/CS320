@@ -1,4 +1,4 @@
-grep
+Manual for grep
 
 From linux manual page:
 grep searches for patterns in each FILE. In the synopsis's first

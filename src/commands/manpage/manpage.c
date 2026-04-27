@@ -48,10 +48,12 @@ int print_description(char* query) {
 int request_manpage(char* query) {
     // For when there was no query present, it will print how to use the function
     if (!query || strlen(query) == 0) {
+        printf("--------------------------------------------\n");
         printf("How to use the man function:\n");
-        printf("\t\n\"man [command]\"\n\n");
+        printf("\t\"man [command]\"\n");
         printf("Where the manual will return the manual based on the \"command\" given.\n");
         printf("Example: \"man grep\" will provide the manual for the \"grep\" command\n");
+        printf("--------------------------------------------\n");
         return 1;
     }
     print_description(query);
