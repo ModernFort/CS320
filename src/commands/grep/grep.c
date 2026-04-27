@@ -4,7 +4,7 @@
 #define MAX_LINE_LEN 4096
 
 int match_pattern(FILE* fp, const char* pattern_to_match){
-  return 0;
+
 }
 
 //Call the helper to initialize flag state from user args. The helper handles errors
@@ -34,13 +34,8 @@ void match_files_txt(grep_state *state){
     printf("Done!\n");
 }
 
-int grep_main(int argc, char** argv){
-    char** grep_args = argv;
+int grep_main(int argc, char** grep_args){
     grep_state state = get_state(argc, grep_args);
-
-    printf("State:\n");
-    printf("Mode: %d\n", state.mode);
-    printf("Strings to find:\n");
     for(int i=0; i < state.pattern_info.pattern_count; i++){
         printf("%s\n", state.pattern_info.patterns[i]);
     }
